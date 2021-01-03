@@ -1,2 +1,2 @@
-# super-spoon
+# snweather-ui
 UI for snweatherstation
