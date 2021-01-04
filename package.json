@@ -1,0 +1,22 @@
+{
+  "name": "snweather-ui",
+  "version": "0.1.0",
+  "description": "UI for snweatherstation",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/signag/snweather-ui.git"
+  },
+  "keywords": [
+    "weatherstation"
+  ],
+  "author": "signag",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/signag/snweather-ui/issues"
+  },
+  "homepage": "https://github.com/signag/snweather-ui#readme"
+}
