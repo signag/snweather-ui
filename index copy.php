@@ -24,7 +24,7 @@
             $('#thermometer').jqxLinearGauge({
                 orientation: 'vertical',
                 width: 200,
-                height: 316,
+                height: 400,
                 ticksMajor: { size: '15%', interval: 5 },
                 ticksMinor: { size: '8%', interval: 1, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
                 max: 40,
@@ -40,8 +40,8 @@
 
             // Set up barometer
             $('#barometer').jqxGauge({
-                width: 316,
-                height: 316,
+                width: 350,
+                height: 350,
                 radius: 160,
                 startAngle: 60,
                 endAngle: 360,
@@ -63,8 +63,8 @@
 
             // Set up hygrometer
             $('#hygrometer').jqxGauge({
-                width: 316,
-                height: 316,
+                width: 350,
+                height: 350,
                 radius: 160,
                 startAngle: 50,
                 endAngle: 330,
@@ -201,7 +201,7 @@
 				    baseUnit: 'hour',
                     unitInterval: 2,
 				    formatFunction: function (value) {
-				        return $.jqx.dataFormat.formatdate(value, 'HH:mm');
+				        return $.jqx.dataFormat.formatdate(value, 'dd.MM. HH:mm');
 				    },
 				    showTickMarks: true
 				},
@@ -247,7 +247,7 @@
 				    baseUnit: 'hour',
                     unitInterval: 2,
 				    formatFunction: function (value) {
-				        return $.jqx.dataFormat.formatdate(value, 'HH:mm');
+				        return $.jqx.dataFormat.formatdate(value, 'dd.MM. HH:mm');
 				    },
 				    showTickMarks: true
 				},
@@ -270,7 +270,7 @@
 					}
 				]
 			};
-			// setup the pressure chart
+			// setup the temperature chart
 			$('#presFunc').jqxChart(pSettings);
 
 		    // prepare humidity settings
@@ -291,7 +291,7 @@
 				    baseUnit: 'hour',
                     unitInterval: 2,
 				    formatFunction: function (value) {
-				        return $.jqx.dataFormat.formatdate(value, 'HH:mm');
+				        return $.jqx.dataFormat.formatdate(value, 'dd.MM. HH:mm');
 				    },
 				    showTickMarks: true
 				},
@@ -314,101 +314,70 @@
 					}
 				]
 			};
-			// setup the humidity chart
+			// setup the temperature chart
 			$('#humiFunc').jqxChart(hSettings);
 
         });
     </script>
+	<style type="text/css">
+       .auto-style1 {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .def {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+	</style>
 </head>
 <body>
+    
 <header>
-	<div class="snw-flex-container snw-header">
-        <!-- Header -->
-		<div class="snw-flex-item snw-station">
-			<h1>Wetterstation</h1>
-		</div>
-		<div class="snw-flex-item snw-time">
-			<p id="measurement"></p>
-		</div>
-		<div class="snw-flex-item snw-nav">
-			<p>Navigation</p>
-		</div>
-	</div>
-</header>
+    <div class="snw-header">
+        <h1>Wetterstation</h1>
+        <p>&nbsp;&nbsp;</p>
+        <p id="measurement"></p>
+    </div>
+</header>    
 <main>
-	<div class="snw-flex-container">
-        <!-- Main data area -->
-		<div class="snw-flex-item current">
-            <!-- Current measurements -->
-			<div class="snw-flex-item snw-temp-block">
-                <!-- Temperature block -->
-                <div class="snw-flex-container">
-					<div class="snw-flex-item">
-                        <div class="snw-thermometer" id="thermometer"></div>
-                        <p class="snw-value" id="tempCur"></p>
-					</div>
-					<div class="snw-flex-item">
-                        <div class="snw-cur-graph" id="tempFunc"></div>
-					</div>
-				</div>
-			</div>
-			<div class="snw-flex-item snw-pres-block">
-                <!-- Pressure block -->
-				<div class="snw-flex-container">
-					<div class="snw-flex-item">
-                        <div class="snw-gauge" id="barometer"></div>
-                        <p class="snw-value" id="presCur"></p>
-					</div>
-					<div class="snw-flex-item">
-                        <div class="snw-cur-graph" id="presFunc"></div>
-					</div>
-				</div>
-			</div>
-			<div class="snw-flex-item snw-humi-block">
-                <!-- Humidity block -->
-				<div class="snw-flex-container">
-					<div class="snw-flex-item">
-                        <div class="snw-gauge" id="hygrometer"></div>
-                        <p class="snw-value" id="humiCur"></p>
-					</div>
-					<div class="snw-flex-item">
-                        <div class="snw-cur-graph" id="humiFunc"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="snw-flex-item hour-forecast">
-            <!-- Hourly forecast -->
-			<p>Hourly forecast</p>
-			<div class="snw-flex-container">
-				<div class="snw-flex-item">
-					<p>Graphicxxxxxxxxxxxx</p>
-				</div>
-				<div class="snw-flex-item">
-					<p>Tablexxxxxxxxxxxx</p>
-				</div>
-			</div>
-		</div>
-		<div class="snw-flex-item day-forecast">
-            <!-- Daily forecast -->
-			<p>Daily block</p>
-			<div class="snw-flex-container">
-				<div class="snw-flex-item">
-					<p>Graphicxxxxxxxxxxxxx</p>
-				</div>
-				<div class="snw-flex-item">
-					<p>Tablexxxxxxxxxxxx</p>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="snw-temp">
+        <div class="thermometer">
+            <div id="thermometer"></div>
+            <p id="tempCur"></p>
+        </div>
+        <div style="width:310px; height:400px; margin: auto" id="tempFunc"></div>
+    </div>
+
 </main>
-<footer>
-	<div class="snw-flex-container">
-		<div class="snw-flex-item">
-			<p></p>
-		</div>
-	</div>
-</footer>
+
+<table style="width: 100%">
+    <tr>
+        <td style="width:20%">
+            <div id="thermometer"></div>
+            <p class="def" id="tempCur"></p>
+        </td>
+        <td style="width:60%">
+            <div style="width:310px; height:400px; margin: auto" id="tempFunc"></div>
+        </td>
+    </tr>
+    <tr>
+        <td style="width:20%">
+            <div id="barometer"></div>
+            <p class="def" id="presCur"></p>
+        </td>
+        <td style="width:60%">
+            <div style="width:310px; height:400px; margin: auto" id="presFunc"></div>
+        </td>
+    </tr>
+    <tr>
+        <td style="width:20%">
+            <div id="hygrometer"></div>
+            <p class="def" id="humiCur"></p>
+        </td>
+        <td style="width:60%">
+            <div style="width:310px; height:400px; margin: auto" id="humiFunc">
+        </td>
+    </tr>
+</table>
+
+
 </body>
 </html>
