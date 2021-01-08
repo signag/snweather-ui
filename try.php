@@ -60,7 +60,7 @@
 		<div class="snw-flex-item hour-forecast">
 			<p>Hourly forecast</p>
 			<div class="snw-flex-container">
-				<div class="snw-flex-item">
+				<div class="snw-flex-item negativeTemperature">
 					<p>Graphicxxxxxxxxxxxx</p>
 				</div>
 				<div class="snw-flex-item">

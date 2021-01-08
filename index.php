@@ -18,6 +18,14 @@
     <script type="text/javascript" src="scripts/jqwidgets/jqxradiobutton.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxradiobutton.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxgauge.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.selection.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.filter.js"></script>		
+    <script type="text/javascript" src="scripts/jqwidgets/jqxlistbox.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxdropdownlist.js"></script>	
+
     <script type="text/javascript">
         $(document).ready(function () {
             // Set up thermometer
@@ -384,6 +392,160 @@
 			// setup the humidity chart
 			$('#humiFunc').jqxChart(hSettings);
 
+            // get hourly forecast data
+            var sourceFcHour = {
+                datatype: "json",
+                datafields: [
+                    { name: 'timestamp', type: 'date'},
+                    { name: 'temperature'},
+                    { name: 'humidity'},
+                    { name: 'pressure'},
+                    { name: 'clouds'},
+                    { name: 'uvi'},
+                    { name: 'visibility'},
+                    { name: 'windspeed'},
+                    { name: 'winddir'},
+                    { name: 'rain'},
+                    { name: 'snow'},
+                    { name: 'description', type: 'string'},
+                    { name: 'icon', type: 'string'},
+                    { name: 'alerts', type: 'int'},
+                ],
+                url: 'scripts/weatherForecastHour.php',
+                async: false
+            };
+
+		    var dataAdapterFcHour = new $.jqx.dataAdapter(sourceFcHour,
+			{
+				autoBind: true,
+				async: false,
+				downloadComplete: function () { },
+				loadComplete: function () { },
+				loadError: function () { }
+			});
+
+		    // prepare grid hourly forecast
+			var fcHourSettings = {
+                source: sourceFcHour,
+                height: 1105,
+                width: 900,
+                
+                columns: [
+                    { 
+                        text: 'Datum', 
+                        datafield: 'timestamp', 
+                        cellsformat: 'ddd dd.MM HH:mm', 
+                        width: 120,
+                        pinned: true,
+                    },
+                    { 
+                        text: 'Temperatur', 
+                        datafield: 'temperature', 
+                        cellsformat: 'f1', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 85,
+                        cellclassname: function (row, column, value, data) {
+                            if (value < 0) {
+                                return 'negativeTemperature';
+                            } else {
+                                return ''
+                            }
+                        }
+                    },
+                    { 
+                        text: 'Luftdruck', 
+                        datafield: 'pressure',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 70,
+                    },
+                    { 
+                        text: 'Luftfeuchtigkeit', 
+                        datafield: 'humidity',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 110,
+                    },
+                    { 
+                        text: 'Wolken', 
+                        datafield: 'clouds',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 60,
+                    },
+                    { 
+                        text: 'Regen', 
+                        datafield: 'rain',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 60,
+                    },
+                    { 
+                        text: 'Schnee', 
+                        datafield: 'snow',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 60,
+                    },
+                    { 
+                        text: 'Beschreibung', 
+                        datafield: 'description',
+                        align: 'left', 
+                        cellsalign: 'left', 
+                        width: 150,
+                    },
+                    { 
+                        text: 'Icon', 
+                        datafield: 'icon',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 60,
+                    },
+                    { 
+                        text: 'Alarme', 
+                        datafield: 'alerts',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 60,
+                    },
+                    { 
+                        text: 'UV Index', 
+                        datafield: 'uvi',
+                        cellsformat: 'f2', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 70,
+                    },
+                    { 
+                        text: 'Sichtweite', 
+                        datafield: 'visibility',
+                        cellsformat: 'n', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 85,
+                    },
+                    { 
+                        text: 'Windgeschw.', 
+                        datafield: 'windspeed',
+                        cellsformat: 'f1', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 95,
+                    },
+                    { 
+                        text: 'Windrichtung', 
+                        datafield: 'winddir',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 95,
+                    },
+                ]
+             }
+
+			// setup the hourly forecast table
+            $("#forecastHourlyTab").jqxGrid(fcHourSettings);        
+
         });
     </script>
 </head>
@@ -446,13 +608,9 @@
 		</div>
 		<div class="snw-flex-item hour-forecast">
             <!-- Hourly forecast -->
-			<p>Hourly forecast</p>
 			<div class="snw-flex-container">
 				<div class="snw-flex-item">
-					<p>Graphicxxxxxxxxxxxx</p>
-				</div>
-				<div class="snw-flex-item">
-					<p>Tablexxxxxxxxxxxx</p>
+                    <div class="snw-fchour-grid" id="forecastHourlyTab"></div>
 				</div>
 			</div>
 		</div>

@@ -59,3 +59,16 @@
     margin-right: 5px;
     padding-top: 17px;
 }
+
+.snw-fchour-grid {
+    width: 800px;
+    height: 1100px;
+    border: 0px dashed;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.negativeTemperature {
+    background-color: blue;
+    color: #ffffff
+}
