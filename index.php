@@ -29,7 +29,7 @@
                 ticksMinor: { size: '8%', interval: 1, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
                 max: 40,
                 min: -30,
-                pointer: { size: '5%' },
+                pointer: { size: '5%'},
                 colorScheme: 'scheme05',
                 labels: { interval: 10, formatValue: function (value, position) {
                     return value + '°C';
@@ -169,6 +169,9 @@
                     { name: 'temperature'},
                     { name: 'humidity'},
                     { name: 'pressure'},
+                    { name: 'fc_temperature'},
+                    { name: 'fc_humidity'},
+                    { name: 'fc_pressure'},
                 ],
                 url: 'scripts/weatherDataList.php',
                 async: false
@@ -221,7 +224,23 @@
 					{
 					    type: 'line',
 					    series: [
-                            { dataField: 'temperature'}
+                            { dataField: 'temperature',
+                              lineColor: '#000000',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Gemessene Temperatur'
+                            }
+					    ]
+					},
+					{
+					    type: 'scatter',
+					    series: [
+                            { dataField: 'fc_temperature',
+                              symbolType: 'circle',
+                              symbolSize: 1,
+                              lineColor: '#a6a6a6',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Vorhersage Temperatur'                           
+                            }
 					    ]
 					}
 				]
@@ -265,7 +284,23 @@
 					{
 					    type: 'line',
 					    series: [
-                            { dataField: 'pressure'}
+                            { dataField: 'pressure',
+                              lineColor: '#000000',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Gemessener Luftdruck'
+                            }
+					    ]
+					},
+					{
+					    type: 'scatter',
+					    series: [
+                            { dataField: 'fc_pressure',
+                              symbolType: 'circle',
+                              symbolSize: 1,
+                              lineColor: '#a6a6a6',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Vorhersage Luftdruck'                            
+                            }
 					    ]
 					}
 				]
@@ -309,7 +344,23 @@
 					{
 					    type: 'line',
 					    series: [
-                            { dataField: 'humidity'}
+                            { dataField: 'humidity',
+                              lineColor: '#000000',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Gemessene Luftfeuchtigkeit'
+                            }
+					    ]
+					},
+					{
+					    type: 'scatter',
+					    series: [
+                            { dataField: 'fc_humidity',
+                              symbolType: 'circle',
+                              symbolSize: 1,
+                              lineColor: '#a6a6a6',
+                              emptyPointsDisplay: 'skip',
+                              displayText: 'Vorhersage Luftfeuchtigkeit'                            
+                            }
 					    ]
 					}
 				]
