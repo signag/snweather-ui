@@ -11,7 +11,33 @@ if (mysqli_connect_errno()){
 	exit();
 }
 // get list data and store in a json array
-$query = "SELECT w.TIMESTAMP, w.date, w.time, w.temperature, w.humidity, w.pressure, f.temperature fc_temperature, f.humidity fc_humidity, f.pressure fc_pressure FROM weatherdata w, weatherforecast f WHERE w.timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND f.timestamp = w.timestamp ORDER BY TIMESTAMP ASC;";
+$query = "SELECT w.TIMESTAMP,
+                 w.date,
+   		 		 w.time,
+		 		 w.temperature,
+		 		 w.humidity,
+		 		 w.pressure,
+		 		 f.temperature fc_temperature,
+		 		 f.humidity fc_humidity,
+		 		 f.pressure fc_pressure
+  			FROM weatherdata w,
+       			 weatherforecast f
+ 		   WHERE w.timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+   		     AND f.timestamp = w.timestamp
+		   UNION
+		  SELECT f.TIMESTAMP,
+       			 NULL date,
+		 		 NULL time,
+		 		 NULL temperature,
+		 		 NULL humidity,
+		 		 NULL pressure,
+		 		 f.temperature fc_temperature,
+		 		 f.humidity fc_humidity,
+		 		 f.pressure fc_pressure
+  			FROM weatherforecast f
+ 		   WHERE f.timestamp > NOW()
+   			 AND f.timestamp < DATE_ADD(NOW(), INTERVAL 1 DAY)
+ 	    ORDER BY TIMESTAMP ASC";
 $result = $mysqli->prepare($query);
 $result->execute();
 /* bind result variables */

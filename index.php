@@ -29,11 +29,16 @@
                 ticksMinor: { size: '8%', interval: 1, style: { 'stroke-width': 1, stroke: '#aaaaaa'} },
                 max: 40,
                 min: -30,
-                pointer: { size: '5%'},
+                pointer: { 
+                    size: '5%',
+                    style: {
+                        fill: '#000000'
+                    }
+                },
                 colorScheme: 'scheme05',
                 labels: { interval: 10, formatValue: function (value, position) {
                     return value + '°C';
-                }
+                    }
                 },
                 animationDuration: 500
             });
@@ -49,6 +54,11 @@
                 ticksMinor: { size: '6%', interval: 1, style: { stroke: '#898989'}, visible: true },
                 max: 1080,
                 min: 950,
+                pointer: { 
+                    style: {
+                        fill: '#000000'
+                    }
+                },
                 labels: { position: 'inside', interval: 10},
                 colorScheme: 'scheme05',
                 caption: { value: 'hPa', position: 'bottom', offset: [0, 30], visible: true},
@@ -72,6 +82,12 @@
                 ticksMinor: { size: '6%', interval: 1, style: { stroke: '#898989'}, visible: true },
                 max: 100,
                 min: 0,
+                pointer: { 
+                    size: '5%',
+                    style: {
+                        fill: '#000000'
+                    }
+                },
                 labels: { position: 'inside', interval: 10},
                 colorScheme: 'scheme05',
                 caption: { value: '%', position: 'bottom', offset: [0, 30], visible: true},
@@ -123,8 +139,8 @@
                             startValue: record.temperatureMin,
                             endValue: record.temperatureMax,
                             style: {
-                                fill: '#000000',
-                                stroke: '#000000'
+                                fill: '#999999',
+                                stroke: '#999999'
                             }
                         }];
                         $('#thermometer').jqxLinearGauge({ ranges: tRanges });
@@ -136,7 +152,7 @@
                             {startValue: 950, endValue: 990, style: {fill: '#0000ff', stroke: '#000000'}},
                             {startValue: 990, endValue: 1040, style: {fill: '#ffff00', stroke: '#000000'}},
                             {startValue: 1040, endValue: 1080, style: {fill: '#ff4000', stroke: '#000000'}},
-                            {startValue: record.pressureMin, endValue: record.pressureMax, style: {fill: '#f000000', stroke: '#000000'}, startDistance: 22, endDistance: 22}
+                            {startValue: record.pressureMin, endValue: record.pressureMax, style: {fill: '#999999', stroke: '#999999'}, startDistance: 22, endDistance: 22}
                         ];
                         $('#barometer').jqxGauge({ ranges: bRanges });
                         $('#barometer').jqxGauge('value', record.pressureCur);
@@ -147,7 +163,7 @@
                             {startValue: 0, endValue: 35, style: {fill: '#ff4000', stroke: '#000000'}},
                             {startValue: 35, endValue: 65, style: {fill: '#40ff00', stroke: '#000000'}},
                             {startValue: 65, endValue: 100, style: {fill: '#0000ff', stroke: '#000000'}},
-                            {startValue: record.humidityMin, endValue: record.humidityMax, style: {fill: '#f000000', stroke: '#000000'}, startDistance: 22, endDistance: 22}
+                            {startValue: record.humidityMin, endValue: record.humidityMax, style: {fill: '#999999', stroke: '#999999'}, startDistance: 22, endDistance: 22}
                         ];
                         $('#hygrometer').jqxGauge({ ranges: hRanges });
                         $('#hygrometer').jqxGauge('value', record.humidityCur);
