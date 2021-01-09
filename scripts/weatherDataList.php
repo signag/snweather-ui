@@ -20,8 +20,8 @@ $query = "SELECT w.TIMESTAMP,
 		 		 f.temperature fc_temperature,
 		 		 f.humidity fc_humidity,
 		 		 f.pressure fc_pressure
-  			FROM weatherdata w,
-       			 weatherforecast f
+  			FROM $tabweatherdata w,
+       			 $tabweatherforecast f
  		   WHERE w.timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)
    		     AND f.timestamp = w.timestamp
 		   UNION
@@ -34,26 +34,37 @@ $query = "SELECT w.TIMESTAMP,
 		 		 f.temperature fc_temperature,
 		 		 f.humidity fc_humidity,
 		 		 f.pressure fc_pressure
-  			FROM weatherforecast f
+  			FROM $tabweatherforecast f
  		   WHERE f.timestamp > NOW()
    			 AND f.timestamp < DATE_ADD(NOW(), INTERVAL 1 DAY)
- 	    ORDER BY TIMESTAMP ASC";
+		 ORDER BY TIMESTAMP ASC";
+		 
 $result = $mysqli->prepare($query);
 $result->execute();
+
 /* bind result variables */
-$result->bind_result($timestamp, $date, $time, $temperature, $humidity, $pressure, $fc_temperature, $fc_humidity, $fc_pressure);
+$result->bind_result($timestamp, 
+					 $date, 
+					 $time, 
+					 $temperature, 
+					 $humidity, 
+					 $pressure, 
+					 $fc_temperature, 
+					 $fc_humidity, 
+					 $fc_pressure);
+					 
 /* fetch values */
 while ($result->fetch()){
 	$weatherDataList[] = array(
-		'timestamp' => $timestamp,
-		'date' => $date,
-		'time' => $time,
-		'temperature' => $temperature,
-		'humidity' => $humidity,
-		'pressure' => $pressure,
-		'fc_temperature' => $fc_temperature,
-		'fc_humidity' => $fc_humidity,
-		'fc_pressure' => $fc_pressure
+		'timestamp'			=> $timestamp,
+		'date' 				=> $date,
+		'time' 				=> $time,
+		'temperature' 		=> $temperature,
+		'humidity' 			=> $humidity,
+		'pressure' 			=> $pressure,
+		'fc_temperature'	=> $fc_temperature,
+		'fc_humidity' 		=> $fc_humidity,
+		'fc_pressure' 		=> $fc_pressure
 	);
 }
 

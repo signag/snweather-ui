@@ -25,7 +25,7 @@ $query = "SELECT timestamp,
 				 description,
 				 icon,
 				 alerts
-  			FROM weatherforecast
+  			FROM $tabweatherforecast
  		   WHERE timestamp >= NOW()
  	    ORDER BY TIMESTAMP ASC";
 $result = $mysqli->prepare($query);

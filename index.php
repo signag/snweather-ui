@@ -546,6 +546,100 @@
 			// setup the hourly forecast table
             $("#forecastHourlyTab").jqxGrid(fcHourSettings);        
 
+            // get daily forecast data
+            var sourceFcDay = {
+                datatype: "json",
+                datafields: [
+                    { name: 'property'},
+                    { name: 'day_01'},
+                    { name: 'day_02'},
+                    { name: 'day_03'},
+                    { name: 'day_04'},
+                    { name: 'day_05'},
+                    { name: 'day_06'},
+                    { name: 'day_07'},
+                    { name: 'day_08'},
+                ],
+                url: 'scripts/weatherForecastDay.php',
+                async: false
+            };
+
+            var dataAdapterFcDay = new $.jqx.dataAdapter(sourceFcDay,
+			{
+				autoBind: true,
+				async: false,
+				downloadComplete: function () { },
+				loadComplete: function () { },
+				loadError: function () { }
+			});
+
+		    // prepare grid daily forecast
+			var fcDaySettings = {
+                source: sourceFcDay,
+                height: 1105,
+                width: 900,
+                
+                columns: [
+                    { 
+                        text: 'Eigenschaft', 
+                        datafield: 'property', 
+                        width: 120,
+                        pinned: true,
+                    },
+                    { 
+                        text: 'Tag 1', 
+                        datafield: 'day_01', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 2', 
+                        datafield: 'day_02', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 3', 
+                        datafield: 'day_03', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 4', 
+                        datafield: 'day_04', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 5', 
+                        datafield: 'day_05', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 6', 
+                        datafield: 'day_06', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 7', 
+                        datafield: 'day_07', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                    { 
+                        text: 'Tag 8', 
+                        datafield: 'day_08', 
+                        width: 85,
+                        cellsalign: 'right', 
+                    },
+                ]
+             }
+
+			// setup the hourly forecast table
+            $("#forecastDailyTab").jqxGrid(fcDaySettings);        
+
         });
     </script>
 </head>
@@ -616,13 +710,9 @@
 		</div>
 		<div class="snw-flex-item day-forecast">
             <!-- Daily forecast -->
-			<p>Daily block</p>
 			<div class="snw-flex-container">
 				<div class="snw-flex-item">
-					<p>Graphicxxxxxxxxxxxxx</p>
-				</div>
-				<div class="snw-flex-item">
-					<p>Tablexxxxxxxxxxxx</p>
+                    <div class="snw-fcday-grid" id="forecastDailyTab"></div>
 				</div>
 			</div>
 		</div>
