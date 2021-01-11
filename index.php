@@ -424,11 +424,16 @@
 				loadError: function () { }
 			});
 
+            // renderer for icons
+            var iconrenderer = function(row, datafield, value) {
+                return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/' + value + '.png"/>';
+            }
+
 		    // prepare grid hourly forecast
 			var fcHourSettings = {
                 source: sourceFcHour,
                 height: 1105,
-                width: 900,
+                width: 800,
                 
                 columns: [
                     { 
@@ -498,9 +503,10 @@
                     { 
                         text: 'Icon', 
                         datafield: 'icon',
-                        align: 'right', 
-                        cellsalign: 'right', 
+                        align: 'center', 
+                        cellsalign: 'center', 
                         width: 60,
+                        cellsrenderer: iconrenderer,
                     },
                     { 
                         text: 'Alarme', 
@@ -544,7 +550,7 @@
              }
 
 			// setup the hourly forecast table
-            $("#forecastHourlyTab").jqxGrid(fcHourSettings);        
+            $("#forecastHourlyTab").jqxGrid(fcHourSettings);
 
             // get daily forecast data
             var sourceFcDay = {
@@ -577,7 +583,7 @@
 			var fcDaySettings = {
                 source: sourceFcDay,
                 height: 1105,
-                width: 900,
+                width: 800,
                 
                 columns: [
                     { 
