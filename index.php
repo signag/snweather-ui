@@ -444,6 +444,14 @@
                         pinned: true,
                     },
                     { 
+                        text: 'Icon', 
+                        datafield: 'icon',
+                        align: 'center', 
+                        cellsalign: 'center', 
+                        width: 60,
+                        cellsrenderer: iconrenderer,
+                    },
+                    { 
                         text: 'Temperatur', 
                         datafield: 'temperature', 
                         cellsformat: 'f1', 
@@ -499,14 +507,6 @@
                         align: 'left', 
                         cellsalign: 'left', 
                         width: 150,
-                    },
-                    { 
-                        text: 'Icon', 
-                        datafield: 'icon',
-                        align: 'center', 
-                        cellsalign: 'center', 
-                        width: 60,
-                        cellsrenderer: iconrenderer,
                     },
                     { 
                         text: 'Alarme', 

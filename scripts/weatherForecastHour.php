@@ -12,9 +12,9 @@ if (mysqli_connect_errno()){
 }
 // get list data and store in a json array
 $query = "SELECT timestamp,
-                 temperature,
-   		 		 humidity,
-		 		 pressure,
+                 temperature_hist temperature,
+   		 		 humidity_hist humidity,
+		 		 pressure_hist pressure,
 		 		 clouds,
 		 		 uvi,
 		 		 visibility,
@@ -50,9 +50,9 @@ $result->bind_result($timestamp,
 while ($result->fetch()){
 	$weatherForecastHour[] = array(
 		'timestamp' 	=> $timestamp,
-		'temperature' 	=> $temperature,
-		'humidity' 		=> $humidity,
-		'pressure' 		=> $pressure,
+		'temperature'	=> $temperature,
+		'humidity'		=> $humidity,
+		'pressure'		=> $pressure,
 		'clouds' 		=> $clouds,
 		'uvi' 			=> $uvi,
 		'visibility' 	=> $visibility,

@@ -17,23 +17,23 @@ $query = "SELECT w.TIMESTAMP,
 		 		 w.temperature,
 		 		 w.humidity,
 		 		 w.pressure,
-		 		 f.temperature fc_temperature,
-		 		 f.humidity fc_humidity,
-		 		 f.pressure fc_pressure
+		 		 f.temperature_hist fc_temperature,
+		 		 f.humidity_hist    fc_humidity,
+		 		 f.pressure_hist    fc_pressure
   			FROM $tabweatherdata w,
        			 $tabweatherforecast f
  		   WHERE w.timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)
    		     AND f.timestamp = w.timestamp
 		   UNION
 		  SELECT f.TIMESTAMP,
-       			 NULL date,
-		 		 NULL time,
-		 		 NULL temperature,
-		 		 NULL humidity,
-		 		 NULL pressure,
-		 		 f.temperature fc_temperature,
-		 		 f.humidity fc_humidity,
-		 		 f.pressure fc_pressure
+       			 NULL 			date,
+		 		 NULL 			time,
+		 		 NULL 			temperature,
+		 		 NULL 			humidity,
+		 		 NULL 			pressure,
+		 		 f.temperature	fc_temperature,
+		 		 f.humidity    	fc_humidity,
+		 		 f.pressure    	fc_pressure
   			FROM $tabweatherforecast f
  		   WHERE f.timestamp > NOW()
    			 AND f.timestamp < DATE_ADD(NOW(), INTERVAL 1 DAY)
