@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />	
     <title id='Description'>Weatherstation</title>
-    <link rel="stylesheet" href="styles/snweather.css" type="text/css" />
     <link rel="stylesheet" href="styles/jqx.base.css" type="text/css" />
+    <link rel="stylesheet" href="styles/snweather.css" type="text/css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <script type="text/javascript" src="scripts/jqwidgets/jquery.min.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxcore.js"></script>
@@ -429,17 +429,181 @@
                 return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/' + value + '.png"/>';
             }
 
+            // renderer for alerts
+            var alertrenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/alert.png"/>';
+                } else {
+                    return '';
+                }
+            }
+
+            // renderer for temperature
+            var temprenderer = function(row, datafield, value) {
+                return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                      + value.toLocaleString(undefined, 
+                                            {
+                                             minimumFractionDigits: 1, 
+                                             maximumFractionDigits: 1,
+                                            }) 
+                      + ' °C</div>'
+            }
+
+            // renderer for rain/snow
+            var poprenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value.toLocaleString(undefined, 
+                                                {
+                                                minimumFractionDigits: 2, 
+                                                maximumFractionDigits: 2,
+                                                }) 
+                        + ' mm/h</div>'
+                } else {
+                    return ""
+                }
+            }
+
+            // renderer for pressure
+            var presrenderer = function(row, datafield, value) {
+                return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                      + value.toLocaleString(undefined, 
+                                            {
+                                             minimumFractionDigits: 0, 
+                                             maximumFractionDigits: 0,
+                                            }) 
+                      + ' hPa</div>'
+            }
+
+            // renderer for percentage
+            var percrenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value.toLocaleString(undefined, 
+                                                {
+                                                minimumFractionDigits: 0, 
+                                                maximumFractionDigits: 0,
+                                                }) 
+                        + ' %</div>'
+                } else {
+                    return ""
+                }
+            }
+
+            // renderer for distance
+            var distrenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value.toLocaleString(undefined, 
+                                                {
+                                                minimumFractionDigits: 0, 
+                                                maximumFractionDigits: 0,
+                                                }) 
+                        + ' m</div>'
+                } else {
+                    return ""
+                }
+            }
+
+            // renderer for distance
+            var speedrenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value.toLocaleString(undefined, 
+                                                {
+                                                minimumFractionDigits: 0, 
+                                                maximumFractionDigits: 0,
+                                                }) 
+                        + ' m/s</div>'
+                } else {
+                    return ""
+                }
+            }
+
+            // renderer for direction
+            var dirrenderer = function(row, datafield, value) {
+
+                if        (value > 338){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir180.png"/>';
+                } else if (value > 292){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir135.png"/>';
+                } else if (value > 248){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir090.png"/>';
+                } else if (value > 202){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir045.png"/>';
+                } else if (value > 158){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir000.png"/>';
+                } else if (value > 113){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir315.png"/>';
+                } else if (value > 68){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir270.png"/>';
+                } else if (value > 22){
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir225.png"/>';
+                } else {
+                    return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir180.png"/>';
+                }
+            }
+
+            // class for temperature
+            var tempclassname = function(row, column, value, data) {
+
+                if (value > 40){
+                    return 'snw-Temperature_p40'
+                } else if (value > 30){
+                    return 'snw-Temperature_p30'
+                } else if (value > 20){
+                    return 'snw-Temperature_p20'
+                } else if (value > 10){
+                    return 'snw-Temperature_p10'
+                } else if (value > 5){
+                    return 'snw-Temperature_p05'
+                } else if (value > 0){
+                    return 'snw-Temperature_p00'
+                } else if (value > -5){
+                    return 'snw-Temperature_m05'
+                } else if (value > -10){
+                    return 'snw-Temperature_m10'
+                } else if (value > -20){
+                    return 'snw-Temperature_m20'
+                } else {
+                    return 'snw-Temperature_m30'
+                }
+            }
+
+            // Grid localization
+            var localizationobj = {};
+            localizationobj.decimalseparator = ",";
+            localizationobj.thousandsseparator = ".";
+            var days = {
+                // full day names
+                names: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                // abbreviated day names
+                namesAbbr: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                // shortest day names
+                namesShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+            };
+            localizationobj.days = days;
+            var months = {
+                // full month names (13 months for lunar calendards -- 13th month should be "" if not lunar)
+                names: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember", ""],
+                // abbreviated month names
+                namesAbbr: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dez", ""]
+            };
+            localizationobj.months = months
+
 		    // prepare grid hourly forecast
 			var fcHourSettings = {
                 source: sourceFcHour,
-                height: 1105,
                 width: 800,
-                
+                height: 1105,
+                                
                 columns: [
                     { 
-                        text: 'Datum', 
+                        text: 'Zeit', 
                         datafield: 'timestamp', 
                         cellsformat: 'ddd dd.MM HH:mm', 
+                        align: 'right', 
+                        cellsalign: 'right', 
                         width: 120,
                         pinned: true,
                     },
@@ -452,54 +616,14 @@
                         cellsrenderer: iconrenderer,
                     },
                     { 
-                        text: 'Temperatur', 
+                        text: 'Temp.', 
                         datafield: 'temperature', 
                         cellsformat: 'f1', 
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 85,
-                        cellclassname: function (row, column, value, data) {
-                            if (value < 0) {
-                                return 'negativeTemperature';
-                            } else {
-                                return ''
-                            }
-                        }
-                    },
-                    { 
-                        text: 'Luftdruck', 
-                        datafield: 'pressure',
-                        align: 'right', 
-                        cellsalign: 'right', 
-                        width: 70,
-                    },
-                    { 
-                        text: 'Luftfeuchtigkeit', 
-                        datafield: 'humidity',
-                        align: 'right', 
-                        cellsalign: 'right', 
-                        width: 110,
-                    },
-                    { 
-                        text: 'Wolken', 
-                        datafield: 'clouds',
-                        align: 'right', 
-                        cellsalign: 'right', 
-                        width: 60,
-                    },
-                    { 
-                        text: 'Regen', 
-                        datafield: 'rain',
-                        align: 'right', 
-                        cellsalign: 'right', 
-                        width: 60,
-                    },
-                    { 
-                        text: 'Schnee', 
-                        datafield: 'snow',
-                        align: 'right', 
-                        cellsalign: 'right', 
-                        width: 60,
+                        width: 65,
+                        cellsrenderer: temprenderer,
+                        cellclassname: tempclassname,
                     },
                     { 
                         text: 'Beschreibung', 
@@ -511,9 +635,53 @@
                     { 
                         text: 'Alarme', 
                         datafield: 'alerts',
+                        align: 'center', 
+                        cellsalign: 'center', 
+                        width: 55,
+                        cellsrenderer: alertrenderer,
+                    },
+                    { 
+                        text: 'Regen', 
+                        datafield: 'rain',
+                        cellsformat: 'f2', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 90,
+                        cellsrenderer: poprenderer,
+                    },
+                    { 
+                        text: 'Schnee', 
+                        datafield: 'snow',
+                        align: 'right', 
+                        cellsformat: 'f2', 
+                        cellsalign: 'right', 
+                        width: 90,
+                        cellsrenderer: poprenderer,
+                    },
+                    { 
+                        text: 'Luftdruck', 
+                        datafield: 'pressure',
+                        cellsformat: 'f', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 80,
+                        cellsrenderer: presrenderer,
+                    },
+                    { 
+                        text: 'Luftfcht.', 
+                        datafield: 'humidity',
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 70,
+                        cellsrenderer: percrenderer,
+                    },
+                    { 
+                        text: 'Wolken', 
+                        datafield: 'clouds',
                         align: 'right', 
                         cellsalign: 'right', 
                         width: 60,
+                        cellsrenderer: percrenderer,
                     },
                     { 
                         text: 'UV Index', 
@@ -530,6 +698,7 @@
                         align: 'right', 
                         cellsalign: 'right', 
                         width: 85,
+                        cellsrenderer: distrenderer,
                     },
                     { 
                         text: 'Windgeschw.', 
@@ -538,6 +707,7 @@
                         align: 'right', 
                         cellsalign: 'right', 
                         width: 95,
+                        cellsrenderer: speedrenderer,
                     },
                     { 
                         text: 'Windrichtung', 
@@ -545,12 +715,14 @@
                         align: 'right', 
                         cellsalign: 'right', 
                         width: 95,
+                        cellsrenderer: dirrenderer,
                     },
                 ]
              }
 
 			// setup the hourly forecast table
             $("#forecastHourlyTab").jqxGrid(fcHourSettings);
+            $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
 
             // get daily forecast data
             var sourceFcDay = {

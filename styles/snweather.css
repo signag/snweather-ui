@@ -84,7 +84,72 @@
     display: block;
 }
 
-.negativeTemperature {
+.snw-negativeTemperature {
     background-color: blue;
     color: #ffffff
+}
+
+.snw-positiveTemperature {
+    background-color: red;
+    color: #ffffff
+}
+
+.snw-Temperature_p40 {
+    background-color: hsl(0, 100%, 50%);
+    color: #ffffff
+}
+
+.snw-Temperature_p30 {
+    background-color: hsl(0, 100%, 55%);
+    color: #ffffff
+}
+
+.snw-Temperature_p30 {
+    background-color: hsl(0, 100%, 60%);
+    color: #ffffff
+}
+
+.snw-Temperature_p20 {
+    background-color: hsl(0, 100%, 65%);
+    color: #ffffff
+}
+
+.snw-Temperature_p10 {
+    background-color: hsl(0, 100%, 70%);
+    color: #000000
+}
+
+.snw-Temperature_p05 {
+    background-color: hsl(0, 100%, 80%);
+    color: #000000
+}
+
+.snw-Temperature_p00 {
+    background-color: hsl(0, 100%, 90%);
+    color: #000000
+}
+
+.snw-Temperature_m05 {
+    background-color: hsl(246, 100%, 90%);
+    color: #000000
+}
+
+.snw-Temperature_m10 {
+    background-color: hsl(246, 100%, 80%);
+    color: #000000
+}
+
+.snw-Temperature_m20 {
+    background-color: hsl(246, 100%, 70%);
+    color: #ffffff
+}
+
+.snw-Temperature_m30 {
+    background-color: hsl(246, 100%, 50%);
+    color: #ffffff
+}
+
+.snw-Temperature_none {
+    background-color: #ffffff;
+    color: #000000
 }
