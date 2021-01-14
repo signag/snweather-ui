@@ -28,6 +28,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            // ==================================================================================
             // Set up thermometer
             $('#thermometer').jqxLinearGauge({
                 orientation: 'vertical',
@@ -51,6 +52,7 @@
                 animationDuration: 500
             });
 
+            // ==================================================================================
             // Set up barometer
             $('#barometer').jqxGauge({
                 width: 316,
@@ -79,6 +81,7 @@
             ];
             $('#barometer').jqxGauge({ ranges: bRanges });
 
+            // ==================================================================================
             // Set up hygrometer
             $('#hygrometer').jqxGauge({
                 width: 316,
@@ -108,6 +111,7 @@
             ];
             $('#hygrometer').jqxGauge({ ranges: hRanges });
 
+            // ==================================================================================
             // get range data
             var sourceRange = {
                 datatype: "json",
@@ -129,6 +133,7 @@
                 url: 'scripts/weatherDataRange.php'
             };
 
+            // ==================================================================================
             // Update thermometer, barometer and hygrometer with measurement data
 		    var dataAdapterRange = new $.jqx.dataAdapter(sourceRange, {
                 loadComplete: function() {
@@ -183,6 +188,7 @@
             // Get data from data source for range date
             dataAdapterRange.dataBind();
 
+            // ==================================================================================
             // get list data
             var sourceList = {
                 datatype: "json",
@@ -210,6 +216,7 @@
 				loadError: function () { }
 			});
 
+            // ==================================================================================
 		    // prepare temperature settings
 			var tSettings = {
                 title: '',
@@ -272,6 +279,7 @@
 			// setup the temperature chart
 			$('#tempFunc').jqxChart(tSettings);
 
+            // ==================================================================================
 		    // prepare pressure settings
 			var pSettings = {
                 title: '',
@@ -332,6 +340,7 @@
 			// setup the pressure chart
 			$('#presFunc').jqxChart(pSettings);
 
+            // ==================================================================================
 		    // prepare humidity settings
 			var hSettings = {
                 title: '',
@@ -392,11 +401,13 @@
 			// setup the humidity chart
 			$('#humiFunc').jqxChart(hSettings);
 
+            // ==================================================================================
             // get hourly forecast data
             var sourceFcHour = {
                 datatype: "json",
                 datafields: [
                     { name: 'timestamp', type: 'date'},
+                    { name: 'isday'},
                     { name: 'temperature'},
                     { name: 'humidity'},
                     { name: 'pressure'},
@@ -505,6 +516,21 @@
                 }
             }
 
+            // renderer for UV index
+            var uvrenderer = function(row, datafield, value) {
+                if (value > 0){
+                    return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value.toLocaleString(undefined, 
+                                                {
+                                                minimumFractionDigits: 2, 
+                                                maximumFractionDigits: 2,
+                                                })
+                        + '</div>'
+                } else {
+                    return ""
+                }
+            }
+
             // renderer for distance
             var speedrenderer = function(row, datafield, value) {
                 if (value > 0){
@@ -570,6 +596,20 @@
                 }
             }
 
+            // class for day/night column
+            var daynightclassname = function(row, column, value, data) {
+
+                if (value == 1){
+                    return 'snw-timeday'
+                } else {
+                    return 'snw-timenight'
+                }
+            }
+            // renderer for day/night column
+            var daynightrenderer = function(row, datafield, value) {
+                return ""
+            }
+
             // Grid localization
             var localizationobj = {};
             localizationobj.decimalseparator = ",";
@@ -594,8 +634,8 @@
 		    // prepare grid hourly forecast
 			var fcHourSettings = {
                 source: sourceFcHour,
+                height: 915,
                 width: 800,
-                height: 1105,
                                 
                 columns: [
                     { 
@@ -604,7 +644,15 @@
                         cellsformat: 'ddd dd.MM HH:mm', 
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 120,
+                        width: 115,
+                        pinned: true,
+                    },
+                    { 
+                        text: 'T', 
+                        datafield: 'isday', 
+                        cellsrenderer: daynightrenderer,
+                        cellclassname: daynightclassname,
+                        width: 5,
                         pinned: true,
                     },
                     { 
@@ -612,7 +660,7 @@
                         datafield: 'icon',
                         align: 'center', 
                         cellsalign: 'center', 
-                        width: 60,
+                        width: 55,
                         cellsrenderer: iconrenderer,
                     },
                     { 
@@ -621,7 +669,7 @@
                         cellsformat: 'f1', 
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 65,
+                        width: 62,
                         cellsrenderer: temprenderer,
                         cellclassname: tempclassname,
                     },
@@ -646,7 +694,7 @@
                         cellsformat: 'f2', 
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 90,
+                        width: 88,
                         cellsrenderer: poprenderer,
                     },
                     { 
@@ -655,7 +703,7 @@
                         align: 'right', 
                         cellsformat: 'f2', 
                         cellsalign: 'right', 
-                        width: 90,
+                        width: 88,
                         cellsrenderer: poprenderer,
                     },
                     { 
@@ -664,7 +712,7 @@
                         cellsformat: 'f', 
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 80,
+                        width: 77,
                         cellsrenderer: presrenderer,
                     },
                     { 
@@ -672,7 +720,7 @@
                         datafield: 'humidity',
                         align: 'right', 
                         cellsalign: 'right', 
-                        width: 70,
+                        width: 67,
                         cellsrenderer: percrenderer,
                     },
                     { 
@@ -690,6 +738,7 @@
                         align: 'right', 
                         cellsalign: 'right', 
                         width: 70,
+                        cellsrenderer: uvrenderer,
                     },
                     { 
                         text: 'Sichtweite', 
@@ -724,6 +773,72 @@
             $("#forecastHourlyTab").jqxGrid(fcHourSettings);
             $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
 
+            // ==================================================================================
+            // get alert data
+            var sourceFcAlerts = {
+                datatype: "json",
+                datafields: [
+                    { name: 'start',        type: 'date'},
+                    { name: 'end',          type: 'date'},
+                    { name: 'event',        type: 'string'},
+                    { name: 'sender_name',  type: 'string'},
+                    { name: 'description',  type: 'string'},
+                ],
+                url: 'scripts/weatherForecastAlerts.php',
+                async: false
+            };
+
+            var dataAdapterFcAlerts = new $.jqx.dataAdapter(sourceFcAlerts,
+			{
+				autoBind: true,
+				async: false,
+				downloadComplete: function () { },
+				loadComplete: function () { },
+				loadError: function () { }
+			});
+
+		    // prepare grid alerts
+			var fcAlertsSettings = {
+                source: sourceFcAlerts,
+                width: 800,
+                autorowheight: true,
+                autoheight: true,
+
+                columns: [
+                    { 
+                        text: 'Beginn', 
+                        datafield: 'start', 
+                        cellsformat: 'ddd dd.MM HH:mm', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 120,
+                    },
+                    { 
+                        text: 'Ende', 
+                        datafield: 'end', 
+                        cellsformat: 'ddd dd.MM HH:mm', 
+                        align: 'right', 
+                        cellsalign: 'right', 
+                        width: 120,
+                    },
+                    { 
+                        text: 'Ereignis', 
+                        datafield: 'event', 
+                        width: 140,
+                    },
+                    { 
+                        text: 'Beschreibung', 
+                        datafield: 'description', 
+                        width: 400,
+                    },
+                ]
+             }
+
+			// setup the hourly forecast table
+            $("#forecastAlertsTab").jqxGrid(fcAlertsSettings);
+            $("#forecastAlertsTab").jqxGrid('localizestrings', localizationobj);
+
+            // ==================================================================================
             // get daily forecast data
             var sourceFcDay = {
                 datatype: "json",
@@ -754,8 +869,9 @@
 		    // prepare grid daily forecast
 			var fcDaySettings = {
                 source: sourceFcDay,
-                height: 1105,
                 width: 800,
+                autoheight: true,
+                showheader: false,
                 
                 columns: [
                     { 
@@ -816,7 +932,8 @@
              }
 
 			// setup the hourly forecast table
-            $("#forecastDailyTab").jqxGrid(fcDaySettings);        
+            $("#forecastDailyTab").jqxGrid(fcDaySettings);
+            $("#forecastDailyTab").jqxGrid('localizestrings', localizationobj);
 
         });
     </script>
@@ -879,16 +996,19 @@
 			</div>
 		</div>
 		<div class="snw-flex-item hour-forecast">
-            <!-- Hourly forecast -->
-			<div class="snw-flex-container">
+            <!-- Hourly forecast and alerts -->
+			<div class="snw-flex-container-column">
 				<div class="snw-flex-item">
                     <div class="snw-fchour-grid" id="forecastHourlyTab"></div>
+				</div>
+				<div class="snw-flex-item">
+                    <div class="snw-fcalerts-grid" id="forecastAlertsTab"></div>
 				</div>
 			</div>
 		</div>
 		<div class="snw-flex-item day-forecast">
             <!-- Daily forecast -->
-			<div class="snw-flex-container">
+			<div class="snw-flex-container-column">
 				<div class="snw-flex-item">
                     <div class="snw-fcday-grid" id="forecastDailyTab"></div>
 				</div>

@@ -11,27 +11,31 @@ if (mysqli_connect_errno()){
 	exit();
 }
 // get list data and store in a json array
-$query = "SELECT timestamp,
-                 temperature_hist temperature,
-   		 		 humidity_hist humidity,
-		 		 pressure_hist pressure,
-		 		 clouds,
-		 		 uvi,
-		 		 visibility,
-		 		 windspeed,
-		 		 winddir,
-				 rain,
-				 snow,
-				 description,
-				 icon,
-				 alerts
-  			FROM $tabweatherforecast
- 		   WHERE timestamp >= NOW()
- 	    ORDER BY TIMESTAMP ASC";
+$query = "SELECT f.timestamp,
+				 IF((TIME(f.timestamp) >= d.sunrise AND TIME(f.timestamp) <= d.sunset), 1, 0) isday,
+                 f.temperature_hist temperature,
+				 f.humidity_hist humidity,
+				 f.pressure_hist pressure,
+				 f.clouds,
+				 f.uvi,
+				 f.visibility,
+				 f.windspeed,
+				 f.winddir,
+				 f.rain,
+				 f.snow,
+				 f.description,
+				 f.icon,
+				 f.alerts
+  			FROM $tabweatherforecast f,
+			  	 $tabdailyforecast d
+ 		   WHERE f.timestamp >= NOW()
+		     AND DATE(f.timestamp) = d.date
+ 	    ORDER BY f.TIMESTAMP ASC";
 $result = $mysqli->prepare($query);
 $result->execute();
 /* bind result variables */
 $result->bind_result($timestamp, 
+                     $isday,
 					 $temperature, 
 					 $humidity,
 					 $pressure, 
@@ -50,6 +54,7 @@ $result->bind_result($timestamp,
 while ($result->fetch()){
 	$weatherForecastHour[] = array(
 		'timestamp' 	=> $timestamp,
+		'isday' 		=> $isday,
 		'temperature'	=> $temperature,
 		'humidity'		=> $humidity,
 		'pressure'		=> $pressure,
