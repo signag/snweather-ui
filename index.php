@@ -531,7 +531,7 @@
                 }
             }
 
-            // renderer for distance
+            // renderer for speed
             var speedrenderer = function(row, datafield, value) {
                 if (value > 0){
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
@@ -548,7 +548,6 @@
 
             // renderer for direction
             var dirrenderer = function(row, datafield, value) {
-
                 if        (value > 338){
                     return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir180.png"/>';
                 } else if (value > 292){
@@ -834,7 +833,7 @@
                 ]
              }
 
-			// setup the hourly forecast table
+			// setup the alert table
             $("#forecastAlertsTab").jqxGrid(fcAlertsSettings);
             $("#forecastAlertsTab").jqxGrid('localizestrings', localizationobj);
 
@@ -866,11 +865,175 @@
 				loadError: function () { }
 			});
 
+            // renderer for property
+            var propertyrenderer = function(row, datafield, value) {
+                switch (row){
+                    case 0 : return '<div style="margin-top: 8px; margin-left: 2px;">Datum</div>';
+                    case 1 : return '<div style="margin-top: 8px; margin-left: 2px;">Sonnenaufgang</div>';
+                    case 2 : return '<div style="margin-top: 8px; margin-left: 2px;">Sonnenuntergang</div>';
+                    case 3 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Morgen</div>';
+                    case 4 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Tag</div>';
+                    case 5 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Abend</div>';
+                    case 6 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Nacht</div>';
+                    case 7 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Minimum</div>';
+                    case 8 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Maximum</div>';
+                    case 9 : return '<div style="margin-top: 8px; margin-left: 2px;">Luftdruck</div>';
+                    case 10: return '<div style="margin-top: 8px; margin-left: 2px;">Luftfeuchtigkeit</div>';
+                    case 11: return '<div style="margin-top: 8px; margin-left: 2px;">Windgeschwind.</div>';
+                    case 12: return '<div style="margin-top: 8px; margin-left: 2px;">Windrichtung</div>';
+                    case 13: return '<div style="margin-top: 8px; margin-left: 2px;">Wolken</div>';
+                    case 14: return '<div style="margin-top: 8px; margin-left: 2px;">UV Index</div>';
+                    case 15: return '<div style="margin-top: 8px; margin-left: 2px;">Niederschl. Wahrs.</div>';
+                    case 16: return '<div style="margin-top: 8px; margin-left: 2px;">Regen</div>';
+                    case 17: return '<div style="margin-top: 8px; margin-left: 2px;">Schnee</div>';
+                    case 18: return '<div style="margin-top: 8px; margin-left: 2px;">Beschreibung</div>';
+                    case 19: return '<div style="margin-top: 8px; margin-left: 2px;">Icon</div>';
+                    case 20: return '<div style="margin-top: 8px; margin-left: 2px;">Alarme</div>';
+                }
+            }
+
+            var dvalrenderer = function(row, datafield, value) {
+                switch (row){
+                    case 0 :
+                        var val = new Date(value);
+                        var wdn = val.getDay();
+                        var wds = days['namesAbbr'][wdn];
+                        var ds  = val.getDate().toString().padStart(2, '0');
+                        var mn  = val.getMonth() + 1;
+                        var ms  = mn.toString().padStart(2, '0')
+                        return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + wds + ' ' + ds + '.' + ms + '.'
+                        + '</div>';
+                    case 1 : 
+                    case 2 : 
+                        return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                        + value
+                        + '</div>';
+                    case 3 :
+                    case 4 : 
+                    case 5 : 
+                    case 6 : 
+                    case 7 : 
+                    case 8 : 
+                        return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 1, 
+                                                        maximumFractionDigits: 1,
+                                                        }) 
+                                + ' °C</div>';
+                    case 9 : 
+                        return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 0, 
+                                                        maximumFractionDigits: 0,
+                                                        }) 
+                                + ' hPa</div>';
+                    case 10: 
+                    case 13: 
+                        if (value > 0){
+                            return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 0, 
+                                                        maximumFractionDigits: 0,
+                                                        }) 
+                                + ' %</div>';
+                        } else {
+                            return "";
+                        }
+                    case 11: 
+                        if (value > 0){
+                            return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 0, 
+                                                        maximumFractionDigits: 0,
+                                                        }) 
+                                + ' m/s</div>';
+                        } else {
+                            return "";
+                        }
+                    case 12: 
+                        if        (value > 338){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir180.png"/>';
+                        } else if (value > 292){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir135.png"/>';
+                        } else if (value > 248){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir090.png"/>';
+                        } else if (value > 202){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir045.png"/>';
+                        } else if (value > 158){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir000.png"/>';
+                        } else if (value > 113){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir315.png"/>';
+                        } else if (value > 68){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir270.png"/>';
+                        } else if (value > 22){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir225.png"/>';
+                        } else {
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/dir180.png"/>';
+                        }
+                    case 14: 
+                        if (value > 0){
+                            return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 2, 
+                                                        maximumFractionDigits: 2,
+                                                        })
+                                + '</div>';
+                        } else {
+                            return "";
+                        }
+                    case 15: 
+                        if (value > 0){
+                            val = 100 * value
+                            return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + val.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 0, 
+                                                        maximumFractionDigits: 0,
+                                                        }) 
+                                + ' %</div>';
+                        } else {
+                            return "";
+                        }
+                    case 16: 
+                    case 17: 
+                        if (value > 0){
+                            return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
+                                + value.toLocaleString(undefined, 
+                                                        {
+                                                        minimumFractionDigits: 2, 
+                                                        maximumFractionDigits: 2,
+                                                        }) 
+                                + ' mm/h</div>';
+                        } else {
+                            return "";
+                        }
+                    case 18: 
+                        return '<div class="jqx-grid-cell-left-align" style="margin-top: 8px;">' 
+                                + value
+                                + '</div>';
+                    case 19: 
+                        return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/' + value + '.png"/>';
+                    case 20: 
+                        if (value > 0){
+                            return '<img style="margin-top: 4px; margin-bottom: auto; margin-left: auto; margin-right: auto; display: block;" src="./icons/alert.png"/>';
+                        } else {
+                            return '';
+                        }
+                }
+            }
+
 		    // prepare grid daily forecast
 			var fcDaySettings = {
                 source: sourceFcDay,
                 width: 800,
                 autoheight: true,
+                autorowheight: true,
                 showheader: false,
                 
                 columns: [
@@ -879,54 +1042,63 @@
                         datafield: 'property', 
                         width: 120,
                         pinned: true,
+                        cellsrenderer: propertyrenderer,
                     },
                     { 
                         text: 'Tag 1', 
                         datafield: 'day_01', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 2', 
                         datafield: 'day_02', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 3', 
                         datafield: 'day_03', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 4', 
                         datafield: 'day_04', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 5', 
                         datafield: 'day_05', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 6', 
                         datafield: 'day_06', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 7', 
                         datafield: 'day_07', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                     { 
                         text: 'Tag 8', 
                         datafield: 'day_08', 
                         width: 85,
                         cellsalign: 'right', 
+                        cellsrenderer: dvalrenderer,
                     },
                 ]
              }
