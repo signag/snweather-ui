@@ -93,6 +93,13 @@
     margin-bottom: 5px;
 }
 
+.snw-weatherwidget {
+    margin-top: 20px;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .snw-icon {
     margin-top: 4px;
     margin-bottom: auto;

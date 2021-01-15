@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />	
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.2" />	
     <title id='Description'>Weatherstation</title>
     <link rel="stylesheet" href="styles/jqx.base.css" type="text/css" />
     <link rel="stylesheet" href="styles/snweather.css" type="text/css" />
@@ -1183,6 +1183,18 @@
 			<div class="snw-flex-container-column">
 				<div class="snw-flex-item">
                     <div class="snw-fcday-grid" id="forecastDailyTab"></div>
+				</div>
+				<div class="snw-flex-item">
+                    <div class="snw-weatherwidget">
+                        <iframe 
+                            marginheight='0' 
+                            marginwidth='0' 
+                            scrolling='no'
+                            width='300' 
+                            height='200'
+                            src='https://api.wetteronline.de/wetterwidget?gid=10630&modeid=CW2&seourl=coelbe&locationname=Cölbe&lang=de'>
+                        </iframe>
+                    </div>
 				</div>
 			</div>
 		</div>
