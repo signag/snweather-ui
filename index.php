@@ -1173,17 +1173,22 @@
                 dataAdapterRange.dataBind();
                 dataAdapterList.dataBind();
                 dataAdapterFcHour.dataBind();
-                dataAdapterFcAlerts.dataBind();
                 dataAdapterFcDay.dataBind();
                 $('#tempFunc').jqxChart('refresh');
                 $('#presFunc').jqxChart('refresh');
                 $('#humiFunc').jqxChart('refresh');
                 $('#forecastHourlyTab').jqxGrid('refreshdata');
                 $('#forecastHourlyTab').jqxGrid('refresh');
-                $('#forecastAlertsTab').jqxGrid('refreshdata');
-                $('#forecastAlertsTab').jqxGrid('refresh');
                 $('#forecastDailyTab').jqxGrid('refreshdata');
                 $('#forecastDailyTab').jqxGrid('refresh');
+                dataAdapterFcAlerts.dataBind();
+                $('#forecastAlertsTab').jqxGrid('refreshdata');
+                $('#forecastAlertsTab').jqxGrid('refresh');
+            });
+        
+            // Setup overview button
+            $("#overviewbutton").jqxLinkButton({ width: '150', height: '50'});
+            $('#overviewbutton').click(function() {
             });
         });
         
@@ -1201,7 +1206,10 @@
 		</div>
 		<div class="snw-flex-item snw-nav">
             <input type="button" value="Aktualisieren" id='refreshbutton' />
-		</div>
+        </div>
+		<div class="snw-flex-item snw-nav">
+            <a style='margin-left: 25px;' target="_blank" href="overview.php" id='overviewbutton'>Verlauf</a>
+        </div>
 	</div>
 </header>
 <main>

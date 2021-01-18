@@ -32,6 +32,14 @@
     margin-bottom: 5px;
 }
 
+.snw-ovw-graph {
+    width: 1900px;
+    height: 350px;
+    border: 1px dashed;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .snw-thermometer {
     border: 0px dashed;
     margin-left: 59px;
