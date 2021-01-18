@@ -573,25 +573,25 @@
             var tempclassname = function(row, column, value, data) {
 
                 if (value > 40){
-                    return 'snw-Temperature_p40'
+                    return 'snw-Temperature_p40';
                 } else if (value > 30){
-                    return 'snw-Temperature_p30'
+                    return 'snw-Temperature_p30';
                 } else if (value > 20){
-                    return 'snw-Temperature_p20'
+                    return 'snw-Temperature_p20';
                 } else if (value > 10){
-                    return 'snw-Temperature_p10'
+                    return 'snw-Temperature_p10';
                 } else if (value > 5){
-                    return 'snw-Temperature_p05'
+                    return 'snw-Temperature_p05';
                 } else if (value > 0){
-                    return 'snw-Temperature_p00'
+                    return 'snw-Temperature_p00';
                 } else if (value > -5){
-                    return 'snw-Temperature_m05'
+                    return 'snw-Temperature_m05';
                 } else if (value > -10){
-                    return 'snw-Temperature_m10'
+                    return 'snw-Temperature_m10';
                 } else if (value > -20){
-                    return 'snw-Temperature_m20'
+                    return 'snw-Temperature_m20';
                 } else {
-                    return 'snw-Temperature_m30'
+                    return 'snw-Temperature_m30';
                 }
             }
 
@@ -1028,6 +1028,58 @@
                 }
             }
 
+            
+            // class for temperature
+            var dvalclassname = function(row, column, value, data) {
+                switch (row){
+                    case 0 :
+                        return 'jqx-widget-header jqx-grid-header';
+                    case 1 : 
+                    case 2 : 
+                        return '';
+                    case 3 :
+                    case 4 : 
+                    case 5 : 
+                    case 6 : 
+                    case 7 : 
+                    case 8 : 
+                        if (value > 40){
+                            return 'snw-Temperature_p40';
+                        } else if (value > 30){
+                            return 'snw-Temperature_p30';
+                        } else if (value > 20){
+                            return 'snw-Temperature_p20';
+                        } else if (value > 10){
+                            return 'snw-Temperature_p10';
+                        } else if (value > 5){
+                            return 'snw-Temperature_p05';
+                        } else if (value > 0){
+                            return 'snw-Temperature_p00';
+                        } else if (value > -5){
+                            return 'snw-Temperature_m05';
+                        } else if (value > -10){
+                            return 'snw-Temperature_m10';
+                        } else if (value > -20){
+                            return 'snw-Temperature_m20';
+                        } else {
+                            return 'snw-Temperature_m30';
+                        }
+                    case 9  :
+                    case 10 : 
+                    case 11 : 
+                    case 12 : 
+                    case 13 : 
+                    case 14 : 
+                    case 15 : 
+                    case 16 : 
+                    case 17 : 
+                    case 18 : 
+                    case 19 : 
+                    case 20 : 
+                        return '';
+                }
+            }
+
 		    // prepare grid daily forecast
 			var fcDaySettings = {
                 source: sourceFcDay,
@@ -1050,6 +1102,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 2', 
@@ -1057,6 +1110,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 3', 
@@ -1064,6 +1118,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 4', 
@@ -1071,6 +1126,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 5', 
@@ -1078,6 +1134,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 6', 
@@ -1085,6 +1142,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 7', 
@@ -1092,6 +1150,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                     { 
                         text: 'Tag 8', 
@@ -1099,6 +1158,7 @@
                         width: 85,
                         cellsalign: 'right', 
                         cellsrenderer: dvalrenderer,
+                        cellclassname: dvalclassname,
                     },
                 ]
              }
@@ -1106,8 +1166,27 @@
 			// setup the hourly forecast table
             $("#forecastDailyTab").jqxGrid(fcDaySettings);
             $("#forecastDailyTab").jqxGrid('localizestrings', localizationobj);
-
+        
+            // Setup refresh button
+            $("#refreshbutton").jqxButton({ width: '150', height: '50'});
+            $('#refreshbutton').click(function() {
+                dataAdapterRange.dataBind();
+                dataAdapterList.dataBind();
+                dataAdapterFcHour.dataBind();
+                dataAdapterFcAlerts.dataBind();
+                dataAdapterFcDay.dataBind();
+                $('#tempFunc').jqxChart('refresh');
+                $('#presFunc').jqxChart('refresh');
+                $('#humiFunc').jqxChart('refresh');
+                $('#forecastHourlyTab').jqxGrid('refreshdata');
+                $('#forecastHourlyTab').jqxGrid('refresh');
+                $('#forecastAlertsTab').jqxGrid('refreshdata');
+                $('#forecastAlertsTab').jqxGrid('refresh');
+                $('#forecastDailyTab').jqxGrid('refreshdata');
+                $('#forecastDailyTab').jqxGrid('refresh');
+            });
         });
+        
     </script>
 </head>
 <body>
@@ -1121,7 +1200,7 @@
 			<p id="measurement"></p>
 		</div>
 		<div class="snw-flex-item snw-nav">
-			<p>Navigation</p>
+            <input type="button" value="Aktualisieren" id='refreshbutton' />
 		</div>
 	</div>
 </header>
