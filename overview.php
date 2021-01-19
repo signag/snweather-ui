@@ -25,11 +25,32 @@
     <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.filter.js"></script>		
     <script type="text/javascript" src="scripts/jqwidgets/jqxlistbox.js"></script>	
     <script type="text/javascript" src="scripts/jqwidgets/jqxdropdownlist.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxdatetimeinput.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxcalendar.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.culture.de-DE.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
 
             // ==================================================================================
+            Date.prototype.toDayTimestamp = function() {
+                y = this.getFullYear();
+                m = this.getMonth() + 1;
+                d = this.getDate();
+                ts = y 
+                    + '-' + m.toString().padStart(2, '0') 
+                    + '-' + d.toString().padStart(2, '0');
+                return ts;
+            };
+
+            // Specify data
+            var tEnd   = new Date();
+            var tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1)
+            var querydata = {
+                'start' : tStart.toDayTimestamp() + ' 00:00:00',
+                'end'   : tEnd.toDayTimestamp() + ' 23:59:59',
+            };
             // get list data
             var sourceList = {
                 datatype: "json",
@@ -45,7 +66,8 @@
                     { name: 'fc_pressure'},
                 ],
                 url: 'scripts/weatherOverviewList.php',
-                async: false
+                data: querydata,
+                async: false,
             };
 
 		    var dataAdapterList = new $.jqx.dataAdapter(sourceList,
@@ -242,9 +264,33 @@
 			// setup the humidity chart
 			$('#humiFunc').jqxChart(hSettings);
         
-            // Setup refresh button
-            $("#refreshbutton").jqxButton({ width: '150', height: '50'});
-            $('#refreshbutton').click(function() {
+            // Setup start selector
+            $("#startinput").jqxDateTimeInput({ width: '120px', height: '25px' });
+            $('#startinput').jqxDateTimeInput({culture: 'de-DE' });
+            $("#startinput").jqxDateTimeInput('setDate', tStart);
+            $('#startinput').on('change', function (event) {  
+                tStart = event.args.date;
+                querydata = {
+                    'start' : tStart.toDayTimestamp() + ' 00:00:00',
+                    'end'   : tEnd.toDayTimestamp() + ' 23:59:59',
+                };
+                sourceList['data'] = querydata;
+                dataAdapterList.dataBind();
+                $('#tempFunc').jqxChart('refresh');
+                $('#presFunc').jqxChart('refresh');
+                $('#humiFunc').jqxChart('refresh');
+            });
+            // Setup end selector
+            $("#endinput").jqxDateTimeInput({ width: '120px', height: '25px' });
+            $('#endinput').jqxDateTimeInput({culture: 'de-DE' });
+            $("#endinput").jqxDateTimeInput('setDate', tEnd);
+            $('#endinput').on('change', function (event) {  
+                tEnd = event.args.date;
+                querydata = {
+                    'start' : tStart.toDayTimestamp() + ' 00:00:00',
+                    'end'   : tEnd.toDayTimestamp() + ' 23:59:59',
+                };
+                sourceList['data'] = querydata;
                 dataAdapterList.dataBind();
                 $('#tempFunc').jqxChart('refresh');
                 $('#presFunc').jqxChart('refresh');
@@ -262,7 +308,10 @@
 			<h1>Wetterstation</h1>
 		</div>
 		<div class="snw-flex-item snw-nav">
-            <input type="button" value="Aktualisieren" id='refreshbutton' />
+            <p>Von: </p><div id='startinput'></div>
+		</div>
+		<div class="snw-flex-item snw-nav">
+            <p>Bis: </p><div id='endinput'></div>
 		</div>
 	</div>
 </header>

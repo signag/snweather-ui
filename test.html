@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to call the new myMet() method, and display this month's name, using the new myProp property.</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+Date.prototype.myMethod = function() {
+  y = this.getFullYear();
+  m = this.getMonth() + 1;
+  d = this.getDate();
+  this.timestamp = y 
+                 + '-' + m.toString().padStart(2, '0') 
+                 + '-' + d.toString().padStart(2, '0')
+                 + ' ' + '23:59:59'
+};
+Date.prototype.toTimestamp = function() {
+  y = this.getFullYear();
+  m = this.getMonth() + 1;
+  d = this.getDate();
+  ts = y 
+     + '-' + m.toString().padStart(2, '0') 
+     + '-' + d.toString().padStart(2, '0');
+  return ts;
+};
+
+function myFunction() {
+  var d = new Date();
+  var x = new Date(d.getFullYear(), d.getMonth(), 1)
+  document.getElementById("demo").innerHTML = d.toTimestamp() + ' ' + x.toTimestamp();
+}
+</script>
+
+</body>
+</html>

@@ -10,6 +10,16 @@ if (mysqli_connect_errno()){
 	printf("Connect failed: %s\n", mysqli_connect_error());
 	exit();
 }
+
+$start = date("Y-m") . '-01 00:00:00';
+if (isset($_GET['start'])) {
+	$start = $_GET['start'];
+}
+$end   = date("Y-m-d") . ' 23:59:59';
+if (isset($_GET['end'])) {
+	$end = $_GET['end'];
+}
+
 // get list data and store in a json array
 $query = "SELECT w.TIMESTAMP,
                  w.date,
@@ -22,7 +32,8 @@ $query = "SELECT w.TIMESTAMP,
 		 		 f.pressure_hist    fc_pressure
   			FROM $tabweatherdata w,
        			 $tabweatherforecast f
- 		   WHERE w.timestamp >= DATE_SUB(NOW(), INTERVAL 365 DAY)
+ 		   WHERE w.timestamp >= '$start'
+			 AND w.timestamp <= '$end'
    		     AND f.timestamp = w.timestamp
 			 AND MINUTE(f.timestamp) = 0
 		 ORDER BY TIMESTAMP ASC";

@@ -14,3 +14,5 @@ Widgets on this page make use of the jQWidgets framework <https://www.jqwidgets.
 ## Installation
 
 Download / clone the package to your web server deploy directory (e.g. Apache htdocs).
+
+Adjust scripts/connect.php with the valid database connection data.
