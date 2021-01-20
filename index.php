@@ -898,9 +898,17 @@
                         var val = new Date(value);
                         var wdn = val.getDay();
                         var wds = days['namesAbbr'][wdn];
-                        var ds  = val.getDate().toString().padStart(2, '0');
+                        //var ds  = val.getDate().toString().padStart(2, '0');
+                        var ds  = val.getDate().toString();
+                        if (ds.length < 2) {
+                            ds = '0' + ds
+                        };
                         var mn  = val.getMonth() + 1;
-                        var ms  = mn.toString().padStart(2, '0')
+                        //var ms  = mn.toString().padStart(2, '0')
+                        var ms  = mn.toString()
+                        if (ms.length < 2) {
+                            ms = '0' + ms
+                        };
                         return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
                         + wds + ' ' + ds + '.' + ms + '.'
                         + '</div>';
@@ -1204,11 +1212,15 @@
 		<div class="snw-flex-item snw-time">
 			<p id="measurement"></p>
 		</div>
-		<div class="snw-flex-item snw-nav">
-            <input type="button" value="Aktualisieren" id='refreshbutton' />
-        </div>
-		<div class="snw-flex-item snw-nav">
-            <a style='margin-left: 25px;' target="_blank" href="overview.php" id='overviewbutton'>Verlauf</a>
+        <div class="snw-flex-item">
+            <div class="snw-flex-container">
+                <div class="snw-flex-item snw-nav">
+                    <input type="button" value="Aktualisieren" id='refreshbutton' />
+                </div>
+                <div class="snw-flex-item snw-nav">
+                    <a style='margin-left: 25px;' target="_blank" href="overview.php" id='overviewbutton'>Verlauf</a>
+                </div>
+            </div>
         </div>
 	</div>
 </header>

@@ -37,10 +37,19 @@
             Date.prototype.toDayTimestamp = function() {
                 y = this.getFullYear();
                 m = this.getMonth() + 1;
+                ms = m.toString();
+                if (ms.length < 2) {
+                    ms = '0' + ms
+                };
                 d = this.getDate();
-                ts = y 
-                    + '-' + m.toString().padStart(2, '0') 
-                    + '-' + d.toString().padStart(2, '0');
+                ds = d.toString();
+                if (ds.length < 2) {
+                    ds = '0' + ds
+                };
+                ts = y + '-' + ms + '-' + ds
+                //ts = y 
+                //    + '-' + m.toString().padStart(2, '0') 
+                //    + '-' + d.toString().padStart(2, '0');
                 return ts;
             };
 
