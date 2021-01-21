@@ -33,6 +33,7 @@ $result->bind_result(
 					);
 					
 /* fetch values */
+$weatherForecastAlerts = array();
 while ($result->fetch()){
 	$weatherForecastAlerts[] = array(
 		'start'			=>	$start, 

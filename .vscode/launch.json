@@ -5,6 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Chrome against localhost",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost/snweather-ui/overview.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Chrome from file",
+            "request": "launch",
+            "type": "chrome",
+            "file": "${workspaceFolder}/overview.html"
+        },
+        {
             "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",

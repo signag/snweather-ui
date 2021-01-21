@@ -27,6 +27,7 @@
     <script type="text/javascript" src="scripts/jqwidgets/jqxdropdownlist.js"></script>	
     <script type="text/javascript" src="scripts/jqwidgets/jqxdatetimeinput.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxcalendar.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxnumberinput.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.culture.de-DE.js"></script>
 
@@ -53,9 +54,36 @@
                 return ts;
             };
 
-            // Specify data
+            // Specify chart parameters
+            // -- Start and end date
             var tEnd   = new Date();
-            var tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1)
+            var tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1);
+            // -- Content selection
+            var includeMeasurement = true;
+            var includeForecast = true;
+            // -- Range
+            const PeriodEnum = Object.freeze({"month":1, "year":2,});
+            var period = PeriodEnum.month;
+            // -- Comparison sets
+            var compSets = [
+                {
+                    select: true,
+                    year: tEnd.getFullYear(),
+                    month: tEnd.getMonth(),
+                },
+                {
+                    select: false,
+                    year: tEnd.getFullYear(),
+                    month: tEnd.getMonth(),
+                },
+                {
+                    select: false,
+                    year: tEnd.getFullYear(),
+                    month: tEnd.getMonth(),
+                },
+            ]
+
+            // Initialize qiery data
             var querydata = {
                 'start' : tStart.toDayTimestamp() + ' 00:00:00',
                 'end'   : tEnd.toDayTimestamp() + ' 23:59:59',
@@ -305,6 +333,117 @@
                 $('#presFunc').jqxChart('refresh');
                 $('#humiFunc').jqxChart('refresh');
             });
+
+            //Checkboxes for content selection
+            $("#selectMeasurement").jqxCheckBox({ width: 120, height: 25 });
+            if (includeMeasurement == true){
+                $("#selectMeasurement").jqxCheckBox('check');
+            } else {
+                $("#selectMeasurement").jqxCheckBox('uncheck');
+            };
+            $("#selectMeasurement").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    includeMeasurement = true;
+                } else {
+                    includeMeasurement = false;
+                };
+            });            
+
+            $("#selectForecast").jqxCheckBox({ width: 120, height: 25 });
+            if (includeForecast == true){
+                $("#selectForecast").jqxCheckBox('check');
+            } else {
+                $("#selectForecast").jqxCheckBox('uncheck');
+            };
+            $("#selectForecast").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    includeMeasurement = true;
+                } else {
+                    includeMeasurement = false;
+                };
+            });            
+
+
+            //Radio buttons for range selection
+            $("#periodMonth").jqxRadioButton({ width: 120, height: 25 });
+            $("#periodMonth").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    includeMeasurement = true;
+                } else {
+                    includeMeasurement = false;
+                };
+            });            
+
+            $("#periodYear").jqxRadioButton({ width: 120, height: 25 });
+            $("#periodYear").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    includeMeasurement = true;
+                } else {
+                    includeMeasurement = false;
+                };
+            });            
+
+            switch (period){
+                case PeriodEnum.month:
+                    $("#periodMonth").jqxRadioButton('check');
+                    break;
+                case PeriodEnum.year:
+                    $("#periodYear").jqxRadioButton('check');
+                    break;
+                default:
+                    $("#periodMonth").jqxRadioButton('check');
+                    break;
+            }
+
+            //Comparison - Selectors
+            $("#set1select").jqxCheckBox({ width: 120, height: 25 });
+            if (compSets[0]['select'] == true){
+                $("#set1select").jqxCheckBox('check');
+            } else {
+                $("#set1select").jqxCheckBox('uncheck');
+            };
+            $("#set1select").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    compSets[0]['select'] = true;
+                } else {
+                    compSets[0]['select'] = false;
+                };
+            });            
+
+            $("#set2select").jqxCheckBox({ width: 120, height: 25 });
+            if (compSets[1]['select'] == true){
+                $("#set2select").jqxCheckBox('check');
+            } else {
+                $("#set2select").jqxCheckBox('uncheck');
+            };
+            $("#set2select").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    compSets[1]['select'] = true;
+                } else {
+                    compSets[1]['select'] = false;
+                };
+            });
+
+            $("#set3select").jqxCheckBox({ width: 120, height: 25 });
+            if (compSets[2]['select'] == true){
+                $("#set3select").jqxCheckBox('check');
+            } else {
+                $("#set3select").jqxCheckBox('uncheck');
+            };
+            $("#set3select").bind('change', function (event) {
+                var checked = event.args.checked;
+                if (checked){
+                    compSets[2]['select'] = true;
+                } else {
+                    compSets[2]['select'] = false;
+                };
+            });            
         });
         
     </script>
@@ -325,17 +464,53 @@
 	</div>
 </header>
 <main>
-	<div class="snw-flex-container-column">
+    <div class="snw-flex-container">
         <div class="snw-flex-item">
-            <div class="snw-ovw-graph" id="tempFunc"></div>
-	    </div>
+            <div class="snw-flex-container-column snw-ovw-data">
+                <div class="snw-flex-item">
+                    <div class="snw-ovw-graph" id="tempFunc"></div>
+                </div>
+                <div class="snw-flex-item">
+                    <div class="snw-ovw-graph" id="presFunc"></div>
+                </div>
+                <div class="snw-flex-item">
+                    <div class="snw-ovw-graph" id="humiFunc"></div>
+                </div>
+            </div>
+        </div>
         <div class="snw-flex-item">
-            <div class="snw-ovw-graph" id="presFunc"></div>
-	    </div>
-        <div class="snw-flex-item">
-            <div class="snw-ovw-graph" id="humiFunc"></div>
-	    </div>
-	</div>
+            <div class="snw-flex-container-column">
+                <div class="snw-flex-item snw-ovw-content-select">
+                    Anzeigen:
+                    <div id="selectMeasurement">Messwerte</div>
+                    <div id="selectForecast">Vorhersagen</div>
+                </div>
+                <div class="snw-flex-item snw-ovw-range-type">
+                    Zeitraum:
+                    <div id="periodMonth">Monat</div>
+                    <div id="periodYear">Jahr</div>
+                </div>
+                <div class="snw-flex-item snw-ovw-comparison">
+                    Vergleich:
+                    <div id="set1">
+                        <div id="set1select"></div>
+                        <div id="set1year"></div>
+                        <div id="set1month"></div>
+                    </div>
+                    <div id="set2">
+                        <div id="set2select"></div>
+                        <div id="set2year"></div>
+                        <div id="set2month"></div>
+                    </div>
+                    <div id="set3">
+                        <div id="set3select"></div>
+                        <div id="set3year"></div>
+                        <div id="set3month"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 <footer>
 	<div class="snw-flex-container">

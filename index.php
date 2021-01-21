@@ -1180,18 +1180,15 @@
             $('#refreshbutton').click(function() {
                 dataAdapterRange.dataBind();
                 dataAdapterList.dataBind();
-                dataAdapterFcHour.dataBind();
-                dataAdapterFcDay.dataBind();
+                //dataAdapterFcHour.dataBind();
+                //dataAdapterFcDay.dataBind();
                 $('#tempFunc').jqxChart('refresh');
                 $('#presFunc').jqxChart('refresh');
                 $('#humiFunc').jqxChart('refresh');
-                $('#forecastHourlyTab').jqxGrid('refreshdata');
-                $('#forecastHourlyTab').jqxGrid('refresh');
-                $('#forecastDailyTab').jqxGrid('refreshdata');
-                $('#forecastDailyTab').jqxGrid('refresh');
-                dataAdapterFcAlerts.dataBind();
-                $('#forecastAlertsTab').jqxGrid('refreshdata');
-                $('#forecastAlertsTab').jqxGrid('refresh');
+                $('#forecastHourlyTab').jqxGrid('updatebounddata');
+                $('#forecastDailyTab').jqxGrid('updatebounddata');
+                //dataAdapterFcAlerts.dataBind();
+                $('#forecastAlertsTab').jqxGrid('updatebounddata');
             });
         
             // Setup overview button
