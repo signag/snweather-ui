@@ -56,42 +56,26 @@ Date.prototype.toDayTimestamp = function() {
 ========================
 Initializing
 ======================== */
+var cmpSets = new Array();
 // -- parameters controlling the data adapter query
 var querydata = {
     'start': tStart.toDayTimestamp() + ' 00:00:00',
     'end': tEnd.toDayTimestamp() + ' 23:59:59',
     period,
     PeriodEnum,
-    compset: [{
-            name:  "cmp1",
-            start: "2020-12-01 00:00:00",
-            end:   "2020-12-31 23:59:59",
-        },
-        {
-            name:  "cmp2",
-            start: "2020-11-01 00:00:00",
-            end:   "2020-11-30 23:59:59",
-        },
-    ]
+    compset: cmpSets,
 };
-
-// -- datafields
-datafieldsBase= [
-    { name: 'timestamp', type: 'date' },
-    { name: 'year' },
-    { name: 'day_year' },
-    { name: 'month' },
-    { name: 'day_month' },
-    { name: 'week' },
-    { name: 'day_week' },
-];
 
 // -- Declare global chart configuration variables
 var sourceList;
+var datafields;
 var dataAdapter;
 var tSettings;
+var tSeriesGroups;
 var pSettings;
+var pSeriesGroups;
 var hSettings;
+var hSeriesGroups;
 
 /*
 ========================
@@ -100,21 +84,7 @@ Set up data adapter
 function setupDataAdapter() {
     sourceList = {
         datatype: "json",
-        datafields: [
-            { name: 'timestamp', type: 'date' },
-            { name: 'year' },
-            { name: 'day_year' },
-            { name: 'month' },
-            { name: 'day_month' },
-            { name: 'week' },
-            { name: 'day_week' },
-            { name: 'temperature_ref' },
-            { name: 'humidity_ref' },
-            { name: 'pressure_ref' },
-            { name: 'fc_temperature_ref' },
-            { name: 'fc_humidity_ref' },
-            { name: 'fc_pressure_ref' },
-        ],
+        datafields: datafields,
         url: 'scripts/weatherOverviewData.php',
         data: querydata,
         async: false,
@@ -165,27 +135,7 @@ function setupTemperatureChart() {
             minValue: -10,
             maxValue: 40
         },
-        seriesGroups: [{
-                type: 'line',
-                series: [{
-                    dataField: 'temperature_ref',
-                    lineColor: '#000000',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Gemessene Temperatur'
-                }]
-            },
-            {
-                type: 'scatter',
-                series: [{
-                    dataField: 'fc_temperature_ref',
-                    symbolType: 'circle',
-                    symbolSize: 1,
-                    lineColor: '#a6a6a6',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Vorhersage Temperatur'
-                }]
-            }
-        ]
+        seriesGroups: tSeriesGroups,
     };
 }
 
@@ -223,27 +173,7 @@ function setupPressureChart() {
             minValue: 950,
             maxValue: 1080
         },
-        seriesGroups: [{
-                type: 'line',
-                series: [{
-                    dataField: 'pressure_ref',
-                    lineColor: '#000000',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Gemessener Luftdruck'
-                }]
-            },
-            {
-                type: 'scatter',
-                series: [{
-                    dataField: 'fc_pressure_ref',
-                    symbolType: 'circle',
-                    symbolSize: 1,
-                    lineColor: '#a6a6a6',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Vorhersage Luftdruck'
-                }]
-            }
-        ]
+        seriesGroups: pSeriesGroups,
     };
 }
 
@@ -281,28 +211,140 @@ function setupHumidityChart() {
             minValue: 0,
             maxValue: 100
         },
-        seriesGroups: [{
-                type: 'line',
-                series: [{
-                    dataField: 'humidity_ref',
-                    lineColor: '#000000',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Gemessene Luftfeuchtigkeit'
-                }]
-            },
-            {
-                type: 'scatter',
-                series: [{
-                    dataField: 'fc_humidity_ref',
-                    symbolType: 'circle',
-                    symbolSize: 1,
-                    lineColor: '#a6a6a6',
-                    emptyPointsDisplay: 'skip',
-                    displayText: 'Vorhersage Luftfeuchtigkeit'
-                }]
-            }
-        ]
+        seriesGroups: hSeriesGroups,
     };
+}
+
+/*
+======================
+Initialize data fields
+====================== */
+function initializeDataFields() {
+    // datafields
+    datafields    = new Array();
+    datafields.push({ name: 'timestamp', type: 'date' })
+    datafields.push({ name: 'year' })
+    datafields.push({ name: 'day_year' })
+    datafields.push({ name: 'month' })
+    datafields.push({ name: 'day_month' })
+    datafields.push({ name: 'week' })
+    datafields.push({ name: 'day_week' })
+
+    // series groups
+    tSeriesGroups = new Array();
+    pSeriesGroups = new Array();
+    hSeriesGroups = new Array();
+}
+
+/*
+==========================================================
+Add data fields for measurement data for specific data set
+========================================================== */
+function DataFieldsMeasurement(set) {
+    // datafields for data source
+    datafields.push({ name: 'temperature_' + set });
+    datafields.push({ name: 'humidity_' + set });
+    datafields.push({ name: 'pressure_' + set });
+
+    // Series groups temperature
+    tSeriesGroups.push({
+        type: 'line',
+        series: [{
+            dataField: 'temperature_' + set,
+            lineColor: '#000000',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Gemessene Temperatur'
+        }]
+    });
+
+    // Series groups pressure
+    pSeriesGroups.push({
+        type: 'line',
+        series: [{
+            dataField: 'pressure_' + set,
+            lineColor: '#000000',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Gemessener Luftdruck'
+        }]
+    });
+
+    // Series groups humidity
+    hSeriesGroups.push({
+        type: 'line',
+        series: [{
+            dataField: 'humidity_' + set,
+            lineColor: '#000000',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Gemessene Luftfeuchtigkeit'
+        }]
+    });
+}
+
+/*
+===========================================
+Add data fields for reference forecast data
+=========================================== */
+function DataFieldsForecast(set) {
+    // datafields for data source
+    datafields.push({ name: 'fc_temperature_' + set });
+    datafields.push({ name: 'fc_humidity_' + set });
+    datafields.push({ name: 'fc_pressure_' + set });
+
+    // Series groups temperature
+    tSeriesGroups.push({
+        type: 'scatter',
+        series: [{
+            dataField: 'fc_temperature_' + set,
+            symbolType: 'circle',
+            symbolSize: 1,
+            lineColor: '#a6a6a6',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Vorhersage Temperatur'
+        }]
+    });
+
+    // Series groups pressure
+    pSeriesGroups.push({
+        type: 'scatter',
+        series: [{
+            dataField: 'fc_pressure_' + set,
+            symbolType: 'circle',
+            symbolSize: 1,
+            lineColor: '#a6a6a6',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Vorhersage Luftdruck'
+        }]
+    });
+
+    // Series groups humidity
+    hSeriesGroups.push({
+        type: 'scatter',
+        series: [{
+            dataField: 'fc_humidity_' + set,
+            symbolType: 'circle',
+            symbolSize: 1,
+            lineColor: '#a6a6a6',
+            emptyPointsDisplay: 'skip',
+            displayText: 'Vorhersage Luftfeuchtigkeit'
+        }]
+    });
+}
+
+/*
+========================================================
+Configure data fields according to current configuration
+======================================================== */
+function configureDataFields() {
+    // Initialize
+    initializeDataFields();
+
+    // Add reference data set
+    if (includeMeasurement == true) {
+        DataFieldsMeasurement('ref');
+    }
+    if (includeForecast == true) {
+        DataFieldsForecast('ref');
+    }
 }
 
 /*
@@ -319,9 +361,12 @@ function setupPeriodSelector() {
         querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
         setupDataAdapter();
         dataAdapter.dataBind();
-        $('#tempFunc').jqxChart('refresh');
-        $('#presFunc').jqxChart('refresh');
-        $('#humiFunc').jqxChart('refresh');
+        setupTemperatureChart();
+        $('#tempFunc').jqxChart(tSettings);
+        setupPressureChart();
+        $('#presFunc').jqxChart(pSettings);
+        setupHumidityChart();
+        $('#humiFunc').jqxChart(hSettings);
     });
     // Setup end selector
     $("#endinput").jqxDateTimeInput({ width: '120px', height: '25px' });
@@ -332,9 +377,12 @@ function setupPeriodSelector() {
         querydata ['end']   = tEnd.toDayTimestamp() + ' 23:59:59',
         setupDataAdapter();
         dataAdapter.dataBind();
-        $('#tempFunc').jqxChart('refresh');
-        $('#presFunc').jqxChart('refresh');
-        $('#humiFunc').jqxChart('refresh');
+        setupTemperatureChart();
+        $('#tempFunc').jqxChart(tSettings);
+        setupPressureChart();
+        $('#presFunc').jqxChart(pSettings);
+        setupHumidityChart();
+        $('#humiFunc').jqxChart(hSettings);
     });
 }
 
@@ -354,12 +402,26 @@ function setupContentSelectorMeasurement() {
         var checked = event.args.checked;
         if (checked) {
             includeMeasurement = true;
+            configureDataFields()
             setupDataAdapter();
             dataAdapter.dataBind();
+            setupTemperatureChart();
+            $('#tempFunc').jqxChart(tSettings);
+            setupPressureChart();
+            $('#presFunc').jqxChart(pSettings);
+            setupHumidityChart();
+            $('#humiFunc').jqxChart(hSettings);
         } else {
             includeMeasurement = false;
+            configureDataFields()
             setupDataAdapter();
             dataAdapter.dataBind();
+            setupTemperatureChart();
+            $('#tempFunc').jqxChart(tSettings);
+            setupPressureChart();
+            $('#presFunc').jqxChart(pSettings);
+            setupHumidityChart();
+            $('#humiFunc').jqxChart(hSettings);
         };
     });
 }
@@ -380,12 +442,26 @@ function setupContentSelectorForecast() {
         var checked = event.args.checked;
         if (checked) {
             includeForecast = true;
+            configureDataFields()
             setupDataAdapter();
             dataAdapter.dataBind();
+            setupTemperatureChart();
+            $('#tempFunc').jqxChart(tSettings);
+            setupPressureChart();
+            $('#presFunc').jqxChart(pSettings);
+            setupHumidityChart();
+            $('#humiFunc').jqxChart(hSettings);
         } else {
             includeForecast = false;
+            configureDataFields()
             setupDataAdapter();
             dataAdapter.dataBind();
+            setupTemperatureChart();
+            $('#tempFunc').jqxChart(tSettings);
+            setupPressureChart();
+            $('#presFunc').jqxChart(pSettings);
+            setupHumidityChart();
+            $('#humiFunc').jqxChart(hSettings);
         };
     });
 }
@@ -492,6 +568,9 @@ function setupComparisonSelector() {
 Main
 =================== */
 $(document).ready(function() {
+
+    // Configure data fields
+    configureDataFields()
 
     // Set up data adapter
     setupDataAdapter();
