@@ -54,7 +54,18 @@
 }
 
 .snw-station {
+    align-items: center;
     margin-right: 10px;
+}
+
+.snw-nav {
+    align-items: center;
+    margin-right: 5px;
+}
+
+.snw-station-id {
+    font-size: 30px;
+    font-weight: bold;
 }
 
 .snw-time {
@@ -62,12 +73,6 @@
     margin-right: 10px;
     padding-top: 17px;
     border: 0px dotted;
-}
-
-.snw-nav {
-    align-content: center;
-    margin-right: 5px;
-    padding-top: 17px;
 }
 
 .snw-fchour-grid {
@@ -190,6 +195,7 @@
 }
 
 .snw-ovw-data {
+    width: 1900px;
     border: 1px solid;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -205,7 +211,7 @@
 }
 
 .snw-ovw-content-select {
-    width: 300px;
+    width: 360px;
     height: 70px;
     border: 1px solid;
     margin-top: 5px;
@@ -213,16 +219,16 @@
 }
 
 .snw-ovw-range-type {
-    width: 300px;
-    height: 100px;
+    width: 360px;
+    height: 120px;
     border: 1px solid;
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
 .snw-ovw-comparison {
-    width: 300px;
-    height: 100px;
+    width: 360px;
+    height: 110px;
     border: 1px solid;
     margin-top: 5px;
     margin-bottom: 5px;

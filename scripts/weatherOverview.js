@@ -2,34 +2,61 @@
 ========================
 Chart default parameters
 ======================== */
-// -- Start and end date
+// -- Initial start and end date
 var tEnd = new Date();
 var tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1);
+
 // -- Content selection
 var includeMeasurement = true;
 var includeForecast = true;
+
 // -- Range
-const PeriodEnum = Object.freeze({ "week": 1, "month": 2, "year": 3, });
+const PeriodEnum = Object.freeze({ "week": 1, "month": 2, "year": 3, "free": 4});
 var period = PeriodEnum.month;
+
 // -- Comparison sets
+//    These are used for the comparison selector on the page
+//    and serve ase base for datafields for data adapter
+//    and xSeriesGroups for the charts.
+//    The first set is the reference set which cannot be unselected
+//    It's period range determins the x-axis value range on the charts.
+
+//    If additional sets are added, also related table rows in overview.html must be added!
+//    Consistency of compSet data (e.g. week, tStart, tEnd) 
+//    under consideration of period will be assured during initialization
 var compSets = [{
         select: true,
-        year: tEnd.getFullYear(),
-        month: tEnd.getMonth(),
+        year:   tEnd.getFullYear(),
+        month:  tEnd.getMonth() + 1,
+        week:   1,
+        tStart: tStart,
+        tEnd:   tEnd, 
+        setName:'REF',
+        setCol: '#000000'
     },
     {
         select: false,
-        year: tEnd.getFullYear(),
-        month: tEnd.getMonth(),
+        year: tEnd.getFullYear() - 1,
+        month: tEnd.getMonth() + 1,
+        week: 1,
+        tStart: tStart,
+        tEnd:   tEnd, 
+        setName: 'CO1',
+        setCol: '#000000'
     },
     {
         select: false,
-        year: tEnd.getFullYear(),
-        month: tEnd.getMonth(),
+        year: tEnd.getFullYear() - 2,
+        month: tEnd.getMonth() + 1,
+        week: 1,
+        tStart: tStart,
+        tEnd:   tEnd, 
+        setName: 'CO2',
+        setCol: '#000000'
     },
 ]
 
-/* 
+/*
 =======================
 Conversion to timestamp
 ======================= */
@@ -53,9 +80,109 @@ Date.prototype.toDayTimestamp = function() {
 };
 
 /*
+=========================
+Last day of month as date
+========================= */
+Date.prototype.lastDayInMonth = function() {
+    var y = this.getFullYear();
+    var m = this.getMonth() + 1;
+    var d = new Date(y, m, 1);
+    d.setDate(d.getDate() - 1);
+    return d;
+};
+
+/* 
+========================================================
+Return the ISO week number
+
+Taken from 
+https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php  
+========================================================= */
+Date.prototype.getWeekNumber = function(){
+    var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+    var dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+}
+
+/* 
+========================================================
+For a given date, get the ISO week number
+
+Taken from 
+https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php  
+ 
+Based on information at:
+http://www.merlyn.demon.co.uk/weekcalc.htm#WNR
+ 
+Algorithm is to find nearest thursday, it's year
+is the year of the week number. Then get weeks
+between that date and the first day of that year.
+ 
+Note that dates in one year can be weeks of previous
+or next year, overlap is up to 3 days.
+ 
+e.g. 2014/12/29 is Monday in week  1 of 2015
+     2012/1/1   is Sunday in week 52 of 2011
+========================================================= */
+function getWeekNumber(d) {
+    // Copy date so don't modify original
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    // Get first day of year
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    // Calculate full weeks to nearest Thursday
+    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    // Return array of year and week number
+    return [d.getUTCFullYear(), weekNo];
+}
+
+/* 
+==============================================================
+Return the start of a week as date, given week number and year
+
+Taken from 
+https://stackoverflow.com/questions/16590500/javascript-calculate-date-from-week-number  
+============================================================== */
+function getStartOfWeek(y, w){
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4)
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    return ISOweekStart;    
+}
+
+/*
+==============================================
+Determine First day of week and return as date
+============================================== */
+function firstDayOfWeek(date) {
+    var wd = date.getDay() || 7;  
+    if( wd !== 1 ) 
+        date.setHours(-24 * (wd - 1)); 
+    return date;
+}
+
+/*
 ========================
 Initializing
 ======================== */
+// -- Auto refresh
+var autoRefresh = true;
+var refreshRequired = false;
+var doNotRefresh = false;
+var ignoreEvents = false;
+
+compSets[0]['week'] = tEnd.getWeekNumber();
+compSets[1]['week'] = tEnd.getWeekNumber();
+compSets[2]['week'] = tEnd.getWeekNumber();
+
 var cmpSets = new Array();
 // -- parameters controlling the data adapter query
 var querydata = {
@@ -78,10 +205,40 @@ var hSettings;
 var hSeriesGroups;
 
 /*
+======================================
+Set up query data from comparison sets
+====================================== */
+function setupQueryData() {
+    cmpSets = new Array();
+    var l = compSets.length;
+    if (l > 1) {
+        for (var i = 1; i < l; i++) {
+            if (compSets[i]['select'] == true) {
+                var s = compSets[i]['tStart'].toDayTimestamp()  + ' 00:00:00';
+                var e = compSets[i]['tEnd'].toDayTimestamp()  + ' 23:59:59';
+                cmpSets.push(
+                    {name: compSets[i]['setName']},
+                    {start: s},
+                    {end: e},
+                );
+            };
+        };
+    };
+    querydata = {
+        'start': tStart.toDayTimestamp() + ' 00:00:00',
+        'end': tEnd.toDayTimestamp() + ' 23:59:59',
+        period,
+        PeriodEnum,
+        compset: cmpSets,
+    };
+}
+
+/*
 ========================
 Set up data adapter
 ======================== */
 function setupDataAdapter() {
+    setupQueryData();
     sourceList = {
         datatype: "json",
         datafields: datafields,
@@ -216,9 +373,12 @@ function setupHumidityChart() {
 }
 
 /*
-======================
+=====================================================================
 Initialize data fields
-====================== */
+
+datafields for dataAdapter and xSeriesGroups for the charts (x=t,p,h)
+are initialized simultaneously
+===================================================================== */
 function initializeDataFields() {
     // datafields
     datafields    = new Array();
@@ -237,9 +397,12 @@ function initializeDataFields() {
 }
 
 /*
-==========================================================
+=====================================================================
 Add data fields for measurement data for specific data set
-========================================================== */
+
+datafields for dataAdapter and xSeriesGroups for the charts (x=t,p,h)
+are added simultaneously
+===================================================================== */
 function DataFieldsMeasurement(set) {
     // datafields for data source
     datafields.push({ name: 'temperature_' + set });
@@ -281,9 +444,12 @@ function DataFieldsMeasurement(set) {
 }
 
 /*
-===========================================
+=====================================================================
 Add data fields for reference forecast data
-=========================================== */
+
+datafields for dataAdapter and xSeriesGroups for the charts (x=t,p,h)
+are added simultaneously
+===================================================================== */
 function DataFieldsForecast(set) {
     // datafields for data source
     datafields.push({ name: 'fc_temperature_' + set });
@@ -331,12 +497,19 @@ function DataFieldsForecast(set) {
 }
 
 /*
-========================================================
+==============================================================
 Configure data fields according to current configuration
-======================================================== */
+
+Fields for dataAdapter (datafields)
+and series groups for charts (xSeriesGroups) 
+for the three chart types (x=t,p,h)
+are configured simultaneously.
+============================================================== */
 function configureDataFields() {
     // Initialize
     initializeDataFields();
+
+    //TODO: Adjust colors */
 
     // Add reference data set
     if (includeMeasurement == true) {
@@ -344,6 +517,63 @@ function configureDataFields() {
     }
     if (includeForecast == true) {
         DataFieldsForecast('ref');
+    }
+
+    // Add comparison data sets
+    //TODO: Add comparison data sets */
+}
+
+/*
+==================
+Refresh all charts
+================== */
+function refreshAll(force) {
+    if ((doNotRefresh == false) 
+    && ((autoRefresh == true) || (force == true))) {
+        // Refresh is done only if autoRefresh is activated or if forced
+        // In addition the global doNotRefresh is used to avoid refresh
+        // when multiple parameter change events are expected
+        $("#progressbar").jqxProgressBar({ value: 10, width: 100, height: 25 });
+
+        // Configure datafields for dataAdapter and xSeriesGroups for charts
+        configureDataFields();
+
+        //set up the dataAdapter
+        setupDataAdapter();
+        $("#progressbar").jqxProgressBar({ value: 20 });
+
+        dataAdapter.dataBind();
+        $("#progressbar").jqxProgressBar({ value: 40 });
+
+        // Set up and refresh the different charts
+        setupTemperatureChart();
+        $('#tempFunc').jqxChart(tSettings);
+        $("#progressbar").jqxProgressBar({ value: 60 });
+
+        setupPressureChart();
+        $('#presFunc').jqxChart(pSettings);
+        $("#progressbar").jqxProgressBar({ value: 80 });
+        
+        setupHumidityChart();
+        $('#humiFunc').jqxChart(hSettings);
+        $("#progressbar").jqxProgressBar({ value: 100 });
+
+        // Reset refresh indicator
+        refreshRequired = false;
+        // ... and disable the refresh button
+        $("#refreshbutton").jqxButton({ disabled: true });
+
+        $("#progressbar").jqxProgressBar({ value: 0 });
+        //$("#progressbar").jqxProgressBar('destroy');
+    } else {
+        // Refresh is postponed
+        // Therefore, set refresh indicator
+        refreshRequired = true;
+        // ... and enable the refresh button
+        $("#refreshbutton").jqxButton({ disabled: false });
+
+        // Reset the doNotRefresh every time, a refresh has been postponed
+        doNotRefresh = false;
     }
 }
 
@@ -358,15 +588,10 @@ function setupPeriodSelector() {
     $("#startinput").jqxDateTimeInput('setDate', tStart);
     $('#startinput').on('change', function(event) {
         tStart = event.args.date;
-        querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
-        setupDataAdapter();
-        dataAdapter.dataBind();
-        setupTemperatureChart();
-        $('#tempFunc').jqxChart(tSettings);
-        setupPressureChart();
-        $('#presFunc').jqxChart(pSettings);
-        setupHumidityChart();
-        $('#humiFunc').jqxChart(hSettings);
+        period = PeriodEnum.free;
+        $("#periodFree").jqxRadioButton('check');
+        initCompSets();
+        refreshAll(false);
     });
     // Setup end selector
     $("#endinput").jqxDateTimeInput({ width: '120px', height: '25px' });
@@ -374,15 +599,10 @@ function setupPeriodSelector() {
     $("#endinput").jqxDateTimeInput('setDate', tEnd);
     $('#endinput').on('change', function(event) {
         tEnd = event.args.date;
-        querydata ['end']   = tEnd.toDayTimestamp() + ' 23:59:59',
-        setupDataAdapter();
-        dataAdapter.dataBind();
-        setupTemperatureChart();
-        $('#tempFunc').jqxChart(tSettings);
-        setupPressureChart();
-        $('#presFunc').jqxChart(pSettings);
-        setupHumidityChart();
-        $('#humiFunc').jqxChart(hSettings);
+        period = PeriodEnum.free;
+        $("#periodFree").jqxRadioButton('check');
+        initCompSets();
+        refreshAll(false);
     });
 }
 
@@ -402,26 +622,10 @@ function setupContentSelectorMeasurement() {
         var checked = event.args.checked;
         if (checked) {
             includeMeasurement = true;
-            configureDataFields()
-            setupDataAdapter();
-            dataAdapter.dataBind();
-            setupTemperatureChart();
-            $('#tempFunc').jqxChart(tSettings);
-            setupPressureChart();
-            $('#presFunc').jqxChart(pSettings);
-            setupHumidityChart();
-            $('#humiFunc').jqxChart(hSettings);
+            refreshAll(false);
         } else {
             includeMeasurement = false;
-            configureDataFields()
-            setupDataAdapter();
-            dataAdapter.dataBind();
-            setupTemperatureChart();
-            $('#tempFunc').jqxChart(tSettings);
-            setupPressureChart();
-            $('#presFunc').jqxChart(pSettings);
-            setupHumidityChart();
-            $('#humiFunc').jqxChart(hSettings);
+            refreshAll(false);
         };
     });
 }
@@ -442,28 +646,368 @@ function setupContentSelectorForecast() {
         var checked = event.args.checked;
         if (checked) {
             includeForecast = true;
-            configureDataFields()
-            setupDataAdapter();
-            dataAdapter.dataBind();
-            setupTemperatureChart();
-            $('#tempFunc').jqxChart(tSettings);
-            setupPressureChart();
-            $('#presFunc').jqxChart(pSettings);
-            setupHumidityChart();
-            $('#humiFunc').jqxChart(hSettings);
+            refreshAll(false);
         } else {
             includeForecast = false;
-            configureDataFields()
-            setupDataAdapter();
-            dataAdapter.dataBind();
-            setupTemperatureChart();
-            $('#tempFunc').jqxChart(tSettings);
-            setupPressureChart();
-            $('#presFunc').jqxChart(pSettings);
-            setupHumidityChart();
-            $('#humiFunc').jqxChart(hSettings);
+            refreshAll(false);
         };
     });
+}
+
+/*
+====================================================
+Prepare compSet based on current configuration
+
+Adjust month, week, tStart, tEnd depending on period
+==================================================== */
+function prepareCompSet(ind) {
+    var start;
+    var end;
+    switch(period) {
+        case PeriodEnum.year:
+            // Year is fix. adjust the others
+            start = new Date(compSets[ind]['year'], 1, 1);
+            end   = new Date(compSets[ind]['year'], 12, 31);
+            compSets[ind]['tStart'] = start;
+            compSets[ind]['tEnd']   = end;
+            compSets[ind]['week']   = end.getWeekNumber();
+            compSets[ind]['month']  = 12;
+            break;
+        case PeriodEnum.month:
+            // Year and month are fixed. Adjust the others
+            start = new Date(compSets[ind]['year'], compSets[ind]['month'] - 1, 1);
+            end   = start.lastDayInMonth();
+            compSets[ind]['tStart'] = start;
+            compSets[ind]['tEnd']   = end;
+            compSets[ind]['week']   = end.getWeekNumber();
+            break;
+        case PeriodEnum.week:
+            // Year and week are fixed. Adjust the others
+            start = getStartOfWeek(compSets[ind]['year'], compSets[ind]['week']);
+            end   = start;
+            end.setDate(tStart.getDate() + 6);
+            compSets[ind]['tStart'] = start;
+            compSets[ind]['tEnd']   = end;
+            compSets[ind]['week']   = end.getWeekNumber();
+            break;
+        case PeriodEnum.free:
+            // Year is fixed. start and end from global
+            if (ind == 0) {
+                start = tStart;
+                end   = tEnd;
+            } else {
+                var m  = tStart.getMonth();
+                var d  = tStart.getDate();
+                tStart = new Date(compSets[ind]['year'], m, d);
+                var m  = tEnd.getMonth();
+                var d  = tEnd.getDate();
+                tEnd   = new Date(compSets[ind]['year'], m, d);
+                compSets[ind]['tStart'] = start;
+                compSets[ind]['tEnd']   = end;
+                compSets[ind]['week']   = end.getWeekNumber();
+            }
+            break;
+    };
+}
+
+/*
+=======================================
+Initialize all compSets
+======================================= */
+function initCompSets() {
+    var nrSets = compSets.length;
+    for (var s = 0; s < nrSets; s++ ) {
+        prepareCompSet(s);
+    }
+}
+
+/*
+===================================================================
+Set up individual comparison selector selection of year
+ind : Corresponding index of compSets
+==================================================================== */
+function refreshComparisonSelectorYear(ind) {
+    var cbId = "#set" + ind + "year";
+    // Set value
+    ignoreEvents = true;
+    $(cbId).jqxNumberInput({ decimal: compSets[ind]['year']});
+    ignoreEvents = false;
+}
+
+/*
+===================================================================
+Refresh individual comparison selector selection of month
+ind : Corresponding index of compSets
+==================================================================== */
+function refreshComparisonSelectorMonth(ind) {
+    var cbId = "#set" + ind + "month";
+    // Set value
+    ignoreEvents = true;
+    $(cbId).jqxNumberInput({ decimal: compSets[ind]['month']});
+    ignoreEvents = false;
+
+    // Disable depending on period selection
+    if ((period == PeriodEnum.year)
+    ||  (period == PeriodEnum.week)) {
+        $(cbId).jqxNumberInput({ disabled: true });
+    } else {
+        $(cbId).jqxNumberInput({ disabled: false });
+    };
+}
+
+/*
+===================================================================
+Refresh individual comparison selector selection of week
+ind : Corresponding index of compSets
+==================================================================== */
+function refreshComparisonSelectorWeek(ind) {
+    var cbId = "#set" + ind + "week";
+    // Set value
+    ignoreEvents = true;
+    $(cbId).jqxNumberInput({ decimal: compSets[ind]['week']});
+    ignoreEvents = false;
+
+    // Disable depending on period selection
+    if ((period == PeriodEnum.year)
+    ||  (period == PeriodEnum.month)
+    ||  (period == PeriodEnum.free)) {
+        $(cbId).jqxNumberInput({ disabled: true });
+    } else {
+        $(cbId).jqxNumberInput({ disabled: false });
+    };
+}
+
+/*
+===================================================================
+Refresh individual comparison selector
+id  : identifying part of jQuery selector (e.g. 'set1')
+ind : Corresponding index of compSets
+isRef : True if the selector is the reference (cannot be unselected)
+==================================================================== */
+function refreshComparisonSelector(ind) {
+    // Year
+    refreshComparisonSelectorYear(ind);
+    // Month
+    refreshComparisonSelectorMonth(ind);
+    // Week
+    refreshComparisonSelectorWeek(ind);
+}
+
+/*
+============================
+Refresh comparison selectors
+============================ */
+function refreshComparisonSelectors() {
+    var nrSets = compSets.length;
+    for (var ind = 0; ind < nrSets; ind++) {
+        refreshComparisonSelector(ind);
+    };
+}
+
+/*
+=======================================
+Adjust compSet based on modified values
+======================================= */
+function adjustCompSet(ind) {
+    // Prepare compSet data
+    prepareCompSet(ind);
+
+    // Adjust display values without firing change events
+    refreshComparisonSelector(ind);
+
+    var tStart_old = tStart;
+    var tEnd_old   = tEnd;
+
+    if (ind == 0) {
+        tStart = compSets[ind]['tStart'];
+        tEnd   = compSets[ind]['tEnd'];
+    };
+
+    if (ind == 0){
+        // Change start and end dates
+        if ((tStart != tStart_old) && (tEnd != tEnd_old)) {
+            // make sure that there will be just one refresh
+            doNotRefresh = true;
+        };
+        $("#startinput").jqxDateTimeInput('setDate', tStart);
+        $("#endinput").jqxDateTimeInput('setDate', tEnd);
+    } else {
+        if (compSets[ind]['select'] == true) {
+            // Do refresh only if comparison set is active
+            refreshAll(false);
+        };
+    };
+}
+
+/*
+===================================================================
+Set up individual comparison selector selection check box
+ind : Corresponding index of compSets
+==================================================================== */
+function setupComparisonSelectorSel(ind) {
+    // Checkbox
+    var cbId = "#set" + ind + "select";
+    $(cbId).jqxCheckBox({ width: 25, height: 25 });
+    if (compSets[ind]['select'] == true) {
+        $(cbId).jqxCheckBox('check');
+    } else {
+        $(cbId).jqxCheckBox('uncheck');
+    };
+    if (ind == 0) {
+        $(cbId).jqxCheckBox({ disabled: true});
+    } else {
+        $(cbId).jqxCheckBox({ disabled: false});
+    }
+    $(cbId).bind('change', function(event) {
+        var checked = event.args.checked;
+        if (checked) {
+            compSets[ind]['select'] = true;
+            refreshAll(false);
+        } else {
+            compSets[ind]['select'] = false;
+            refreshAll(false);
+        };
+    });
+}
+
+/*
+===================================================================
+Set up individual comparison selector selection of year
+id  : identifying part of jQuery selector (e.g. 'set1')
+ind : Corresponding index of compSets
+==================================================================== */
+function setupComparisonSelectorYear(ind) {
+    // Checkbox
+    var cbId = "#set" + ind + "year";
+    var settings = {
+        width: '63px', 
+        height: '25px',
+        decimalDigits: 0,
+        groupSeparator: '',
+        groupSize: 4,
+        inputMode: 'simple',
+        spinButtons: true,
+        spinMode: 'simple',
+        min: 2019,
+        max: 2050,
+    };
+    $(cbId).jqxNumberInput(settings);
+
+    $(cbId).on('change', function(event) {
+        if (ignoreEvents == false) {
+            compSets[ind]['year'] = event.args.value;
+            adjustCompSet(ind);
+        };
+    });
+}
+
+/*
+===================================================================
+Set up individual comparison selector selection of month
+ind : Corresponding index of compSets
+==================================================================== */
+function setupComparisonSelectorMonth(ind) {
+    // Checkbox
+    var cbId = "#set" + ind + "month";
+    var settings = {
+        width: '50px', 
+        height: '25px',
+        decimalDigits: 0,
+        groupSeparator: '',
+        groupSize: 2,
+        inputMode: 'simple',
+        spinButtons: true,
+        spinMode: 'simple',
+        min: 1,
+        max: 12,
+    };
+    $(cbId).jqxNumberInput(settings);
+
+    // Register change event
+    $(cbId).on('change', function(event) {
+        if (($(cbId).jqxNumberInput('disabled') == false) 
+        &&  (ignoreEvents == false)) {
+            // handle only user modifications
+            var value = event.args.value;
+            compSets[ind]['month'] = value;
+            var fdm = new Date(compSets[ind]['year'], value, 1);
+            var ldm = fdm.lastDayInMonth();
+            compSets[ind]['week'] = ldm.getWeekNumber();
+            cbId = "#" + id + "week";
+            $(cbId).jqxNumberInput({ decimal: compSets[ind]['week']});        
+            adjustCompSet(ind);
+        };
+    });
+}
+
+/*
+===================================================================
+Set up individual comparison selector selection of week
+id  : identifying part of jQuery selector (e.g. 'set1')
+ind : Corresponding index of compSets
+==================================================================== */
+function setupComparisonSelectorWeek(ind) {
+    // Checkbox
+    var cbId = "#set" + ind + "week";
+    var settings = {
+        width: '50px', 
+        height: '25px',
+        decimalDigits: 0,
+        groupSeparator: '',
+        groupSize: 2,
+        inputMode: 'simple',
+        spinButtons: true,
+        spinMode: 'simple',
+        min: 1,
+        max: 53,
+    };
+    $(cbId).jqxNumberInput(settings);
+
+    // Register change event
+    $(cbId).on('change', function(event) {
+        if (($(cbId).jqxNumberInput('disabled') == false) 
+        &&  (ignoreEvents == false)) {
+            // handle only user modifications
+            var value = event.args.value;
+            compSets[ind]['week'] = value;
+            var ws = getStartOfWeek(compSets[ind]['year'], value);
+            var we = ws.setUTCDate(tStart.getUTCDate() + 6);
+            compSets[ind]['month'] = we.getMonth();
+            cbId = "#" + id + "month";
+            $(cbId).jqxNumberInput({ decimal: compSets[ind]['month']});        
+            adjustCompSet(ind);
+        };
+    });
+}
+
+/*
+===================================================================
+Set up individual comparison selector
+id  : identifying part of jQuery selector (e.g. 'set1')
+ind : Corresponding index of compSets
+isRef : True if the selector is the reference (cannot be unselected)
+==================================================================== */
+function setupComparisonSelector(ind) {
+    // Checkbox
+    setupComparisonSelectorSel(ind);
+    // Year
+    setupComparisonSelectorYear(ind);
+    // Month
+    setupComparisonSelectorMonth(ind);
+    // Week
+    setupComparisonSelectorWeek(ind);
+}
+
+/*
+===========================
+Set up comparison selectors
+=========================== */
+function setupComparisonSelectors() {
+    var nrSets = compSets.length;
+    for (var ind = 0; ind < nrSets; ind++) {
+        setupComparisonSelector(ind);
+        refreshComparisonSelector(ind);
+    };
 }
 
 /*
@@ -473,11 +1017,25 @@ Set up range selector for week
 function setupRangeSelectorWeek() {
     //Radio buttons for range selection
     $("#periodWeek").jqxRadioButton({ width: 120, height: 25 });
+
+    if (period == PeriodEnum.week) {
+        $("#periodWeek").jqxRadioButton('check');
+    }
+
     $("#periodWeek").bind('change', function(event) {
         var checked = event.args.checked;
         if (checked) {
             period = PeriodEnum.week;
-        };
+            // Starting from tEnd, determine beginning of week
+            tStart = firstDayOfWeek(tEnd);
+            // Refresh comparison selectors
+            refreshComparisonSelectors();
+            // Update display period
+            $("#startinput").jqxDateTimeInput('setDate', tStart);
+            // Refresh not required here. This is done by startinput change event
+            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
+            //refreshAll(false)
+            };
     });
 }
 
@@ -488,10 +1046,24 @@ Set up range selector for month
 function setupRangeSelectorMonth() {
     //Radio buttons for range selection
     $("#periodMonth").jqxRadioButton({ width: 120, height: 25 });
+
+    if (period == PeriodEnum.month) {
+        $("#periodMonth").jqxRadioButton('check');
+    }
+
     $("#periodMonth").bind('change', function(event) {
         var checked = event.args.checked;
         if (checked) {
             period = PeriodEnum.month;
+            // Starting fro tEnd, determine beginning of month
+            tStart = new Date(tEnd.getFullYear(), 0, 1);
+            // Refresh comparison selectors
+            refreshComparisonSelectors();
+            // Update display period
+            $("#startinput").jqxDateTimeInput('setDate', tStart);
+            // Refresh not required here. This is done by startinput change event
+            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
+            //refreshAll(false)
         };
     });
 }
@@ -503,64 +1075,106 @@ Set up range selector for year
 function setupRangeSelectorYear() {
     //Radio buttons for range selection
     $("#periodYear").jqxRadioButton({ width: 120, height: 25 });
+
+    if (period == PeriodEnum.year) {
+        $("#periodYear").jqxRadioButton('check');
+    }
+
     $("#periodYear").bind('change', function(event) {
         var checked = event.args.checked;
         if (checked) {
             period = PeriodEnum.year;
+            // Starting from tEnd, determine beginning of month
+            tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1);
+            // Refresh comparison selectors
+            refreshComparisonSelectors();
+            // Update display period
+            $("#startinput").jqxDateTimeInput('setDate', tStart);
+            // Refresh not required here. This is done by startinput change event
+            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
+            //refreshAll(false)
         };
     });
 }
 
 /*
-==========================
-Set up comparison selector
-========================== */
-function setupComparisonSelector() {
-    //Comparison - Selectors
-    $("#set1select").jqxCheckBox({ width: 120, height: 25 });
-    if (compSets[0]['select'] == true) {
-        $("#set1select").jqxCheckBox('check');
-    } else {
-        $("#set1select").jqxCheckBox('uncheck');
-    };
-    $("#set1select").bind('change', function(event) {
-        var checked = event.args.checked;
-        if (checked) {
-            compSets[0]['select'] = true;
-        } else {
-            compSets[0]['select'] = false;
-        };
-    });
+====================================
+Set up range selector for free range
+==================================== */
+function setupRangeSelectorFree() {
+    //Radio buttons for range selection
+    $("#periodFree").jqxRadioButton({ width: 120, height: 25 });
 
-    $("#set2select").jqxCheckBox({ width: 120, height: 25 });
-    if (compSets[1]['select'] == true) {
-        $("#set2select").jqxCheckBox('check');
-    } else {
-        $("#set2select").jqxCheckBox('uncheck');
-    };
-    $("#set2select").bind('change', function(event) {
-        var checked = event.args.checked;
-        if (checked) {
-            compSets[1]['select'] = true;
-        } else {
-            compSets[1]['select'] = false;
-        };
-    });
+    if (period == PeriodEnum.free) {
+        $("#periodFree").jqxRadioButton('check');
+    }
 
-    $("#set3select").jqxCheckBox({ width: 120, height: 25 });
-    if (compSets[2]['select'] == true) {
-        $("#set3select").jqxCheckBox('check');
-    } else {
-        $("#set3select").jqxCheckBox('uncheck');
-    };
-    $("#set3select").bind('change', function(event) {
+    $("#periodFree").bind('change', function(event) {
         var checked = event.args.checked;
         if (checked) {
-            compSets[2]['select'] = true;
-        } else {
-            compSets[2]['select'] = false;
+            period = PeriodEnum.free;
+            refreshComparisonSelectors();
         };
     });
+}
+
+
+/*
+=================================
+Set up check box for auto refresh
+================================= */
+function setupAutoRefresh() {
+    //Checkbox
+    $("#autoRefresh").jqxCheckBox({ width: 170, height: 25 });
+    if (autoRefresh == true) {
+        $("#autoRefresh").jqxCheckBox('check');
+    } else {
+        $("#autoRefresh").jqxCheckBox('uncheck');
+    };
+    $("#autoRefresh").bind('change', function(event) {
+        var checked = event.args.checked;
+        if (checked) {
+            autoRefresh = true;
+            if (refreshRequired == true) {
+                refreshAll(false);
+            }
+        } else {
+            autoRefresh = false;
+        };
+    });
+}
+
+/*
+=====================
+Toggle refresh button
+===================== */
+function toggleRefreshButton() {
+    if (refreshRequired == true) {
+        $("#refreshbutton").jqxButton({ disabled: false });
+    } else {
+        $("#refreshbutton").jqxButton({ disabled: true });
+    };
+}
+
+/*
+=====================
+Set up refresh button
+===================== */
+function setupRefreshButton() {
+    $("#refreshbutton").jqxButton({ width: 100, height: 25 });
+    toggleRefreshButton();
+    $('#refreshbutton').click(function() {
+        refreshAll(true);
+        $("#refreshbutton").jqxButton({ disabled: false });
+    });
+}
+
+/*
+===================
+Set up progress bar
+=================== */
+function setupProgressBar() {
+    $("#progressbar").jqxProgressBar({ width: 20, height: 25 });
 }
 
 /*
@@ -568,9 +1182,29 @@ function setupComparisonSelector() {
 Main
 =================== */
 $(document).ready(function() {
+    // Auto refresh checkbox and button
+    setupAutoRefresh();
+    setupRefreshButton();
+
+    // Set selector for display period
+    setupPeriodSelector();
+
+    // Set up selector for content types (measurement / forecast)
+    setupContentSelectorMeasurement();
+    setupContentSelectorForecast();
+
+    // Set up radio buttons for selection of range type
+    setupRangeSelectorWeek();
+    setupRangeSelectorMonth();
+    setupRangeSelectorYear();
+    setupRangeSelectorFree();
+
+    // Set up selectors for comparison data sets
+    initCompSets();
+    setupComparisonSelectors();
 
     // Configure data fields
-    configureDataFields()
+    configureDataFields();
 
     // Set up data adapter
     setupDataAdapter();
@@ -586,30 +1220,6 @@ $(document).ready(function() {
     // Define and draw humidity chart
     setupHumidityChart();
     $('#humiFunc').jqxChart(hSettings);
-
-    // Set up selectors
-    setupPeriodSelector();
-
-    setupContentSelectorMeasurement();
-    setupContentSelectorForecast();
-
-    setupRangeSelectorWeek();
-    setupRangeSelectorMonth();
-    setupRangeSelectorYear();
-    switch (period) {
-        case PeriodEnum.week:
-            $("#periodWeek").jqxRadioButton('check');
-            break;
-        case PeriodEnum.month:
-            $("#periodMonth").jqxRadioButton('check');
-            break;
-        case PeriodEnum.year:
-            $("#periodYear").jqxRadioButton('check');
-            break;
-        default:
-            $("#periodMonth").jqxRadioButton('check');
-            break;
-    }
-
-    setupComparisonSelector();
+/*
+*/    
 });

@@ -1215,7 +1215,7 @@
                     <input type="button" value="Aktualisieren" id='refreshbutton' />
                 </div>
                 <div class="snw-flex-item snw-nav">
-                    <a style='margin-left: 25px;' target="_blank" href="overview.php" id='overviewbutton'>Verlauf</a>
+                    <a style='margin-left: 25px;' target="_blank" href="overview.html" id='overviewbutton'>Verlauf</a>
                 </div>
             </div>
         </div>

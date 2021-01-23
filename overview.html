@@ -28,6 +28,7 @@
     <script type="text/javascript" src="scripts/jqwidgets/jqxdatetimeinput.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxcalendar.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxnumberinput.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxprogressbar.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.js"></script>
     <script type="text/javascript" src="scripts/jqwidgets/globalization/globalize.culture.de-DE.js"></script>
     <script type="text/javascript" src="scripts/weatherOverview.js"></script>
@@ -37,13 +38,40 @@
 	<div class="snw-flex-container snw-header">
         <!-- Header -->
 		<div class="snw-flex-item snw-station">
-			<h1>Wetterstation</h1>
+			<div class="snw-station-id">Wetterstation</div>
 		</div>
 		<div class="snw-flex-item snw-nav">
-            <p>Von: </p><div id='startinput'></div>
+            <table>
+                <tr>
+                    <td>
+                        Von:
+                    </td>
+                    <td>
+                        <div id='startinput'></div>
+                    </td>
+                    <td>
+                        Bis:
+                    </td>
+                    <td>
+                        <div id='endinput'></div>
+                    </td>
+                </tr>
+            </table>
 		</div>
 		<div class="snw-flex-item snw-nav">
-            <p>Bis: </p><div id='endinput'></div>
+            <table>
+                <tr>
+                    <td>
+                        <div id="autoRefresh">Autom.aktualisieren</div>
+                    </td>
+                    <td>
+                        <input type="button" value="Aktualisieren" id='refreshbutton' />
+                    </td>
+                    <td>
+                        <div id="progressbar"></div>
+                    </td>
+                </tr>
+            </table>
 		</div>
 	</div>
 </header>
@@ -74,24 +102,81 @@
                     <div id="periodWeek">Woche</div>
                     <div id="periodMonth">Monat</div>
                     <div id="periodYear">Jahr</div>
+                    <div id="periodFree">Frei</div>
                 </div>
                 <div class="snw-flex-item snw-ovw-comparison">
                     Vergleich:
-                    <div id="set1">
-                        <div id="set1select"></div>
-                        <div id="set1year"></div>
-                        <div id="set1month"></div>
-                    </div>
-                    <div id="set2">
-                        <div id="set2select"></div>
-                        <div id="set2year"></div>
-                        <div id="set2month"></div>
-                    </div>
-                    <div id="set3">
-                        <div id="set3select"></div>
-                        <div id="set3year"></div>
-                        <div id="set3month"></div>
-                    </div>
+                    <table class="snw-ovw-cmp-tab">
+                        <tr class="snw-ovw-cmp-row">
+                            <td class="snw-ovw-cmp-sel">
+                                <div id="set0select"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Jahr:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set0year"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Monat:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set0month"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Woche:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set0week"></div>
+                            </td>
+                        </tr>
+                        <tr class="snw-ovw-cmp-row">
+                            <td class="snw-ovw-cmp-sel">
+                                <div id="set1select"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Jahr:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set1year"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Monat:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set1month"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Woche:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set1week"></div>
+                            </td>
+                        </tr>
+                        <tr class="snw-ovw-cmp-row">
+                            <td class="snw-ovw-cmp-sel">
+                                <div id="set2select"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Jahr:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set2year"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Monat:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set2month"></div>
+                            </td>
+                            <td class="snw-ovw-cmp-lbl">
+                                Woche:
+                            </td>
+                            <td class="snw-ovw-cmp-inp">
+                                <div id="set2week"></div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>

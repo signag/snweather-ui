@@ -5,17 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Chrome against localhost",
+            "name": "Launch Overview",
             "request": "launch",
             "type": "chrome",
             "url": "http://localhost/snweather-ui/overview.html",
             "webRoot": "${workspaceFolder}"
         },
         {
-            "name": "Launch Chrome from file",
+            "name": "Launch test",
             "request": "launch",
             "type": "chrome",
-            "file": "${workspaceFolder}/overview.html"
+            "url": "http://localhost/snweather-ui/test.html",
+            "webRoot": "${workspaceFolder}"
         },
         {
             "name": "Listen for XDebug",

@@ -1,5 +1,5 @@
 # Test pages
-test*.html
+test*.*
 # Logs
 logs
 *.log
