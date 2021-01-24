@@ -918,7 +918,7 @@ function setupComparisonSelectorYear(ind) {
     // Checkbox
     var cbId = "#set" + ind + "year";
     var settings = {
-        width: '63px', 
+        width: '80px', 
         height: '25px',
         decimalDigits: 0,
         groupSeparator: '',
@@ -948,7 +948,7 @@ function setupComparisonSelectorMonth(ind) {
     // Checkbox
     var cbId = "#set" + ind + "month";
     var settings = {
-        width: '50px', 
+        width: '63px', 
         height: '25px',
         decimalDigits: 0,
         groupSeparator: '',
@@ -991,7 +991,7 @@ function setupComparisonSelectorWeek(ind) {
     // Checkbox
     var cbId = "#set" + ind + "week";
     var settings = {
-        width: '50px', 
+        width: '63px', 
         height: '25px',
         decimalDigits: 0,
         groupSeparator: '',
