@@ -81,12 +81,12 @@ function getWeatherDataRef($start, $end)
                      DAYOFMONTH(w.timestamp)  day_month,
                      WEEK(w.timestamp, 3)     week,
                      WEEKDAY(w.timestamp)     day_week,
-                     w.temperature            temperature_ref,
-                     w.humidity               humidity_ref,
-                     w.pressure               pressure_ref,
-                     f.temperature_hist       fc_temperature_ref,
-                     f.humidity_hist          fc_humidity_ref,
-                     f.pressure_hist          fc_pressure_ref
+                     w.temperature            temperature_REF,
+                     w.humidity               humidity_REF,
+                     w.pressure               pressure_REF,
+                     f.temperature_hist       fc_temperature_REF,
+                     f.humidity_hist          fc_humidity_REF,
+                     f.pressure_hist          fc_pressure_REF
                 FROM $tabweatherdata          w,
                      $tabweatherforecast      f
                WHERE w.timestamp >= '$start'
@@ -107,12 +107,12 @@ function getWeatherDataRef($start, $end)
         $day_month,
         $week,
         $day_week,
-        $temperature_ref,
-        $humidity_ref,
-        $pressure_ref,
-        $fc_temperature_ref,
-        $fc_humidity_ref,
-        $fc_pressure_ref,
+        $temperature_REF,
+        $humidity_REF,
+        $pressure_REF,
+        $fc_temperature_REF,
+        $fc_humidity_REF,
+        $fc_pressure_REF,
     );
 
     // fetch values
@@ -126,12 +126,12 @@ function getWeatherDataRef($start, $end)
             'day_month'             => $day_month,
             'week'                  => $week,
             'day_week'              => $day_week,
-            'temperature_ref'       => $temperature_ref,
-            'humidity_ref'          => $humidity_ref,
-            'pressure_ref'          => $pressure_ref,
-            'fc_temperature_ref'    => $fc_temperature_ref,
-            'fc_humidity_ref'       => $fc_humidity_ref,
-            'fc_pressure_ref'       => $fc_pressure_ref,
+            'temperature_REF'       => $temperature_REF,
+            'humidity_REF'          => $humidity_REF,
+            'pressure_REF'          => $pressure_REF,
+            'fc_temperature_REF'    => $fc_temperature_REF,
+            'fc_humidity_REF'       => $fc_humidity_REF,
+            'fc_pressure_REF'       => $fc_pressure_REF,
         );
     };
 

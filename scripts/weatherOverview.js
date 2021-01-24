@@ -163,10 +163,11 @@ function getStartOfWeek(y, w){
 Determine First day of week and return as date
 ============================================== */
 function firstDayOfWeek(date) {
-    var wd = date.getDay() || 7;  
+    d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    var wd = d.getDay() || 7;  
     if( wd !== 1 ) 
-        date.setHours(-24 * (wd - 1)); 
-    return date;
+        d.setHours(-24 * (wd - 1)); 
+    return d;
 }
 
 /*
@@ -216,11 +217,11 @@ function setupQueryData() {
             if (compSets[i]['select'] == true) {
                 var s = compSets[i]['tStart'].toDayTimestamp()  + ' 00:00:00';
                 var e = compSets[i]['tEnd'].toDayTimestamp()  + ' 23:59:59';
-                cmpSets.push(
-                    {name: compSets[i]['setName']},
-                    {start: s},
-                    {end: e},
-                );
+                cmpSets.push({
+                    name: compSets[i]['setName'],
+                    start: s,
+                    end: e,
+                });
             };
         };
     };
@@ -239,7 +240,7 @@ Set up data adapter
 ======================== */
 function setupDataAdapter() {
     setupQueryData();
-    sourceList = {
+    var source = {
         datatype: "json",
         datafields: datafields,
         url: 'scripts/weatherOverviewData.php',
@@ -247,7 +248,7 @@ function setupDataAdapter() {
         async: false,
     };
 
-    dataAdapter = new $.jqx.dataAdapter(sourceList, {
+    dataAdapter = new $.jqx.dataAdapter(source, {
         autoBind: true,
         async: false,
         downloadComplete: function() {},
@@ -416,7 +417,7 @@ function DataFieldsMeasurement(set) {
             dataField: 'temperature_' + set,
             lineColor: '#000000',
             emptyPointsDisplay: 'skip',
-            displayText: 'Gemessene Temperatur'
+            displayText: set + ': Gemessene Temperatur'
         }]
     });
 
@@ -427,7 +428,7 @@ function DataFieldsMeasurement(set) {
             dataField: 'pressure_' + set,
             lineColor: '#000000',
             emptyPointsDisplay: 'skip',
-            displayText: 'Gemessener Luftdruck'
+            displayText: set + ': Gemessener Luftdruck'
         }]
     });
 
@@ -438,7 +439,7 @@ function DataFieldsMeasurement(set) {
             dataField: 'humidity_' + set,
             lineColor: '#000000',
             emptyPointsDisplay: 'skip',
-            displayText: 'Gemessene Luftfeuchtigkeit'
+            displayText: set + ': Gemessene Luftfeuchtigkeit'
         }]
     });
 }
@@ -465,7 +466,7 @@ function DataFieldsForecast(set) {
             symbolSize: 1,
             lineColor: '#a6a6a6',
             emptyPointsDisplay: 'skip',
-            displayText: 'Vorhersage Temperatur'
+            displayText: set + ': Vorhersage Temperatur'
         }]
     });
 
@@ -478,7 +479,7 @@ function DataFieldsForecast(set) {
             symbolSize: 1,
             lineColor: '#a6a6a6',
             emptyPointsDisplay: 'skip',
-            displayText: 'Vorhersage Luftdruck'
+            displayText: set + ': Vorhersage Luftdruck'
         }]
     });
 
@@ -491,7 +492,7 @@ function DataFieldsForecast(set) {
             symbolSize: 1,
             lineColor: '#a6a6a6',
             emptyPointsDisplay: 'skip',
-            displayText: 'Vorhersage Luftfeuchtigkeit'
+            displayText: set + ': Vorhersage Luftfeuchtigkeit'
         }]
     });
 }
@@ -513,14 +514,23 @@ function configureDataFields() {
 
     // Add reference data set
     if (includeMeasurement == true) {
-        DataFieldsMeasurement('ref');
-    }
+        DataFieldsMeasurement(compSets[0]['setName']);
+    };
     if (includeForecast == true) {
-        DataFieldsForecast('ref');
-    }
+        DataFieldsForecast(compSets[0]['setName']);
+    };
 
-    // Add comparison data sets
-    //TODO: Add comparison data sets */
+    var nrSets = compSets.length;
+    for (var s = 1; s < nrSets; s++) {
+        if (compSets[s]['select'] == true) {
+            if (includeMeasurement == true) {
+                DataFieldsMeasurement(compSets[s]['setName']);
+            }
+            if (includeForecast == true) {
+                DataFieldsForecast(compSets[s]['setName']);
+            };
+        };
+    };
 }
 
 /*
@@ -573,7 +583,7 @@ function refreshAll(force) {
         $("#refreshbutton").jqxButton({ disabled: false });
 
         // Reset the doNotRefresh every time, a refresh has been postponed
-        doNotRefresh = false;
+        //doNotRefresh = false;
     }
 }
 
@@ -587,22 +597,34 @@ function setupPeriodSelector() {
     $('#startinput').jqxDateTimeInput({ culture: 'de-DE' });
     $("#startinput").jqxDateTimeInput('setDate', tStart);
     $('#startinput').on('change', function(event) {
-        tStart = event.args.date;
-        period = PeriodEnum.free;
-        $("#periodFree").jqxRadioButton('check');
-        initCompSets();
-        refreshAll(false);
+        if (ignoreEvents == false) {
+            tStart = event.args.date;
+            period = PeriodEnum.free;
+            ignoreEvents = true;
+            $("#periodFree").jqxRadioButton('check');
+            ignoreEvents = false;
+            doNotRefresh = true;
+            refreshComparisonSelectors();
+            doNotRefresh = false;
+            refreshAll(false);
+        };
     });
     // Setup end selector
     $("#endinput").jqxDateTimeInput({ width: '120px', height: '25px' });
     $('#endinput').jqxDateTimeInput({ culture: 'de-DE' });
     $("#endinput").jqxDateTimeInput('setDate', tEnd);
     $('#endinput').on('change', function(event) {
-        tEnd = event.args.date;
-        period = PeriodEnum.free;
-        $("#periodFree").jqxRadioButton('check');
-        initCompSets();
-        refreshAll(false);
+        if (ignoreEvents == false) {
+            tEnd = event.args.date;
+            period = PeriodEnum.free;
+            ignoreEvents = true;
+            $("#periodFree").jqxRadioButton('check');
+            ignoreEvents = false;
+            doNotRefresh = true;
+            refreshComparisonSelectors();
+            doNotRefresh = false;
+            refreshAll(false);
+        };
     });
 }
 
@@ -644,7 +666,7 @@ function setupContentSelectorForecast() {
     };
     $("#selectForecast").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             includeForecast = true;
             refreshAll(false);
         } else {
@@ -663,11 +685,12 @@ Adjust month, week, tStart, tEnd depending on period
 function prepareCompSet(ind) {
     var start;
     var end;
+    var tNow = new Date();
     switch(period) {
         case PeriodEnum.year:
             // Year is fix. adjust the others
-            start = new Date(compSets[ind]['year'], 1, 1);
-            end   = new Date(compSets[ind]['year'], 12, 31);
+            start = new Date(compSets[ind]['year'], 0, 1);
+            end   = new Date(compSets[ind]['year'], 11, 31);
             compSets[ind]['tStart'] = start;
             compSets[ind]['tEnd']   = end;
             compSets[ind]['week']   = end.getWeekNumber();
@@ -684,11 +707,16 @@ function prepareCompSet(ind) {
         case PeriodEnum.week:
             // Year and week are fixed. Adjust the others
             start = getStartOfWeek(compSets[ind]['year'], compSets[ind]['week']);
-            end   = start;
-            end.setDate(tStart.getDate() + 6);
+            if (start > tNow) {
+                start = firstDayOfWeek(tNow);
+            };
+            end  = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            end.setDate(start.getDate() + 6);
+            m = end.getMonth();
             compSets[ind]['tStart'] = start;
             compSets[ind]['tEnd']   = end;
             compSets[ind]['week']   = end.getWeekNumber();
+            compSets[ind]['month']  = m + 1;
             break;
         case PeriodEnum.free:
             // Year is fixed. start and end from global
@@ -698,14 +726,14 @@ function prepareCompSet(ind) {
             } else {
                 var m  = tStart.getMonth();
                 var d  = tStart.getDate();
-                tStart = new Date(compSets[ind]['year'], m, d);
+                start = new Date(compSets[ind]['year'], m, d);
                 var m  = tEnd.getMonth();
                 var d  = tEnd.getDate();
-                tEnd   = new Date(compSets[ind]['year'], m, d);
-                compSets[ind]['tStart'] = start;
-                compSets[ind]['tEnd']   = end;
-                compSets[ind]['week']   = end.getWeekNumber();
+                end   = new Date(compSets[ind]['year'], m, d);
             }
+            compSets[ind]['tStart'] = start;
+            compSets[ind]['tEnd']   = end;
+            compSets[ind]['week']   = end.getWeekNumber();
             break;
     };
 }
@@ -714,7 +742,7 @@ function prepareCompSet(ind) {
 =======================================
 Initialize all compSets
 ======================================= */
-function initCompSets() {
+function prepareCompSets() {
     var nrSets = compSets.length;
     for (var s = 0; s < nrSets; s++ ) {
         prepareCompSet(s);
@@ -794,17 +822,6 @@ function refreshComparisonSelector(ind) {
 }
 
 /*
-============================
-Refresh comparison selectors
-============================ */
-function refreshComparisonSelectors() {
-    var nrSets = compSets.length;
-    for (var ind = 0; ind < nrSets; ind++) {
-        refreshComparisonSelector(ind);
-    };
-}
-
-/*
 =======================================
 Adjust compSet based on modified values
 ======================================= */
@@ -815,27 +832,30 @@ function adjustCompSet(ind) {
     // Adjust display values without firing change events
     refreshComparisonSelector(ind);
 
-    var tStart_old = tStart;
-    var tEnd_old   = tEnd;
-
-    if (ind == 0) {
+    if (ind == 0){
         tStart = compSets[ind]['tStart'];
         tEnd   = compSets[ind]['tEnd'];
-    };
-
-    if (ind == 0){
-        // Change start and end dates
-        if ((tStart != tStart_old) && (tEnd != tEnd_old)) {
-            // make sure that there will be just one refresh
-            doNotRefresh = true;
-        };
+        ignoreEvents = true;
         $("#startinput").jqxDateTimeInput('setDate', tStart);
+        ignoreEvents = true;
         $("#endinput").jqxDateTimeInput('setDate', tEnd);
+        refreshAll(false);
     } else {
         if (compSets[ind]['select'] == true) {
             // Do refresh only if comparison set is active
             refreshAll(false);
         };
+    };
+}
+
+/*
+============================
+Refresh comparison selectors
+============================ */
+function refreshComparisonSelectors() {
+    var nrSets = compSets.length;
+    for (var ind = 0; ind < nrSets; ind++) {
+        adjustCompSet(ind);
     };
 }
 
@@ -860,7 +880,7 @@ function setupComparisonSelectorSel(ind) {
     }
     $(cbId).bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             compSets[ind]['select'] = true;
             refreshAll(false);
         } else {
@@ -925,16 +945,19 @@ function setupComparisonSelectorMonth(ind) {
 
     // Register change event
     $(cbId).on('change', function(event) {
+        var cbId = "#set" + ind + "month";
         if (($(cbId).jqxNumberInput('disabled') == false) 
         &&  (ignoreEvents == false)) {
             // handle only user modifications
             var value = event.args.value;
             compSets[ind]['month'] = value;
-            var fdm = new Date(compSets[ind]['year'], value, 1);
+            var fdm = new Date(compSets[ind]['year'], value - 1, 1);
             var ldm = fdm.lastDayInMonth();
             compSets[ind]['week'] = ldm.getWeekNumber();
-            cbId = "#" + id + "week";
-            $(cbId).jqxNumberInput({ decimal: compSets[ind]['week']});        
+            var cbIdw = "#set" + ind + "week";
+            ignoreEvents = true;
+            $(cbIdw).jqxNumberInput({ decimal: compSets[ind]['week']});        
+            ignoreEvents = false;
             adjustCompSet(ind);
         };
     });
@@ -965,16 +988,20 @@ function setupComparisonSelectorWeek(ind) {
 
     // Register change event
     $(cbId).on('change', function(event) {
+        var cbId = "#set" + ind + "week";
         if (($(cbId).jqxNumberInput('disabled') == false) 
         &&  (ignoreEvents == false)) {
             // handle only user modifications
             var value = event.args.value;
             compSets[ind]['week'] = value;
             var ws = getStartOfWeek(compSets[ind]['year'], value);
-            var we = ws.setUTCDate(tStart.getUTCDate() + 6);
-            compSets[ind]['month'] = we.getMonth();
-            cbId = "#" + id + "month";
-            $(cbId).jqxNumberInput({ decimal: compSets[ind]['month']});        
+            var we = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate());
+            we.setDate(ws.getDate() + 6);
+            compSets[ind]['month'] = we.getMonth() + 1;
+            var cbIdm = "#set" + ind + "month";
+            ignoreEvents = true;
+            $(cbIdm).jqxNumberInput({ decimal: compSets[ind]['month']});        
+            ignoreEvents = false;
             adjustCompSet(ind);
         };
     });
@@ -1024,17 +1051,15 @@ function setupRangeSelectorWeek() {
 
     $("#periodWeek").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             period = PeriodEnum.week;
             // Starting from tEnd, determine beginning of week
             tStart = firstDayOfWeek(tEnd);
             // Refresh comparison selectors
+            doNotRefresh = true;
             refreshComparisonSelectors();
-            // Update display period
-            $("#startinput").jqxDateTimeInput('setDate', tStart);
-            // Refresh not required here. This is done by startinput change event
-            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
-            //refreshAll(false)
+            doNotRefresh = false;
+            refreshAll(false);
             };
     });
 }
@@ -1053,17 +1078,15 @@ function setupRangeSelectorMonth() {
 
     $("#periodMonth").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             period = PeriodEnum.month;
             // Starting fro tEnd, determine beginning of month
             tStart = new Date(tEnd.getFullYear(), 0, 1);
             // Refresh comparison selectors
+            doNotRefresh = true;
             refreshComparisonSelectors();
-            // Update display period
-            $("#startinput").jqxDateTimeInput('setDate', tStart);
-            // Refresh not required here. This is done by startinput change event
-            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
-            //refreshAll(false)
+            doNotRefresh = false;
+            refreshAll(false);
         };
     });
 }
@@ -1082,17 +1105,15 @@ function setupRangeSelectorYear() {
 
     $("#periodYear").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             period = PeriodEnum.year;
             // Starting from tEnd, determine beginning of month
             tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1);
             // Refresh comparison selectors
+            doNotRefresh = true;
             refreshComparisonSelectors();
-            // Update display period
-            $("#startinput").jqxDateTimeInput('setDate', tStart);
-            // Refresh not required here. This is done by startinput change event
-            //querydata ['start'] = tStart.toDayTimestamp() + ' 00:00:00';
-            //refreshAll(false)
+            doNotRefresh = false;
+            refreshAll(false);
         };
     });
 }
@@ -1111,9 +1132,12 @@ function setupRangeSelectorFree() {
 
     $("#periodFree").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             period = PeriodEnum.free;
+            doNotRefresh = true;
             refreshComparisonSelectors();
+            doNotRefresh = false;
+            refreshAll(false);
         };
     });
 }
@@ -1133,7 +1157,7 @@ function setupAutoRefresh() {
     };
     $("#autoRefresh").bind('change', function(event) {
         var checked = event.args.checked;
-        if (checked) {
+        if ((checked) && (ignoreEvents == false)) {
             autoRefresh = true;
             if (refreshRequired == true) {
                 refreshAll(false);
@@ -1200,7 +1224,7 @@ $(document).ready(function() {
     setupRangeSelectorFree();
 
     // Set up selectors for comparison data sets
-    initCompSets();
+    prepareCompSets();
     setupComparisonSelectors();
 
     // Configure data fields
