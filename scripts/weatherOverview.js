@@ -42,7 +42,7 @@ var compSets = [{
         tStart: tStart,
         tEnd:   tEnd, 
         setName: 'CO1',
-        setCol: '#000000'
+        setCol: '#FF0000'
     },
     {
         select: false,
@@ -52,7 +52,7 @@ var compSets = [{
         tStart: tStart,
         tEnd:   tEnd, 
         setName: 'CO2',
-        setCol: '#000000'
+        setCol: '#0000FF'
     },
 ]
 
@@ -404,7 +404,7 @@ Add data fields for measurement data for specific data set
 datafields for dataAdapter and xSeriesGroups for the charts (x=t,p,h)
 are added simultaneously
 ===================================================================== */
-function DataFieldsMeasurement(set) {
+function DataFieldsMeasurement(set, col) {
     // datafields for data source
     datafields.push({ name: 'temperature_' + set });
     datafields.push({ name: 'humidity_' + set });
@@ -415,7 +415,7 @@ function DataFieldsMeasurement(set) {
         type: 'line',
         series: [{
             dataField: 'temperature_' + set,
-            lineColor: '#000000',
+            lineColor: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Gemessene Temperatur'
         }]
@@ -426,7 +426,7 @@ function DataFieldsMeasurement(set) {
         type: 'line',
         series: [{
             dataField: 'pressure_' + set,
-            lineColor: '#000000',
+            lineColor: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Gemessener Luftdruck'
         }]
@@ -437,7 +437,7 @@ function DataFieldsMeasurement(set) {
         type: 'line',
         series: [{
             dataField: 'humidity_' + set,
-            lineColor: '#000000',
+            lineColor: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Gemessene Luftfeuchtigkeit'
         }]
@@ -451,7 +451,7 @@ Add data fields for reference forecast data
 datafields for dataAdapter and xSeriesGroups for the charts (x=t,p,h)
 are added simultaneously
 ===================================================================== */
-function DataFieldsForecast(set) {
+function DataFieldsForecast(set, col) {
     // datafields for data source
     datafields.push({ name: 'fc_temperature_' + set });
     datafields.push({ name: 'fc_humidity_' + set });
@@ -464,7 +464,8 @@ function DataFieldsForecast(set) {
             dataField: 'fc_temperature_' + set,
             symbolType: 'circle',
             symbolSize: 1,
-            lineColor: '#a6a6a6',
+            lineColor: col,
+            lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Vorhersage Temperatur'
         }]
@@ -477,7 +478,8 @@ function DataFieldsForecast(set) {
             dataField: 'fc_pressure_' + set,
             symbolType: 'circle',
             symbolSize: 1,
-            lineColor: '#a6a6a6',
+            lineColor: col,
+            lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Vorhersage Luftdruck'
         }]
@@ -490,7 +492,8 @@ function DataFieldsForecast(set) {
             dataField: 'fc_humidity_' + set,
             symbolType: 'circle',
             symbolSize: 1,
-            lineColor: '#a6a6a6',
+            lineColor: col,
+            lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
             displayText: set + ': Vorhersage Luftfeuchtigkeit'
         }]
@@ -514,20 +517,20 @@ function configureDataFields() {
 
     // Add reference data set
     if (includeMeasurement == true) {
-        DataFieldsMeasurement(compSets[0]['setName']);
+        DataFieldsMeasurement(compSets[0]['setName'], compSets[0]['setCol']);
     };
     if (includeForecast == true) {
-        DataFieldsForecast(compSets[0]['setName']);
+        DataFieldsForecast(compSets[0]['setName'], compSets[0]['setCol']);
     };
 
     var nrSets = compSets.length;
     for (var s = 1; s < nrSets; s++) {
         if (compSets[s]['select'] == true) {
             if (includeMeasurement == true) {
-                DataFieldsMeasurement(compSets[s]['setName']);
+                DataFieldsMeasurement(compSets[s]['setName'], compSets[s]['setCol']);
             }
             if (includeForecast == true) {
-                DataFieldsForecast(compSets[s]['setName']);
+                DataFieldsForecast(compSets[s]['setName'], compSets[s]['setCol']);
             };
         };
     };
@@ -740,12 +743,27 @@ function prepareCompSet(ind) {
 
 /*
 =======================================
+Show additional inf for compSets
+======================================= */
+function showCompSetInfo(ind) {
+    // Show set name
+    var cbIdName = "#set" + ind + "name";
+    $(cbIdName).text(compSets[ind].setName);
+
+    // Color
+    var cbIdColor = "#set" + ind + "color";
+    $(cbIdColor).css("background-color", compSets[ind].setCol);
+}
+
+/*
+=======================================
 Initialize all compSets
 ======================================= */
 function prepareCompSets() {
     var nrSets = compSets.length;
     for (var s = 0; s < nrSets; s++ ) {
         prepareCompSet(s);
+        showCompSetInfo(s);
     }
 }
 

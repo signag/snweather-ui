@@ -211,7 +211,7 @@
 }
 
 .snw-ovw-content-select {
-    width: 360px;
+    width: 500px;
     height: 70px;
     border: 1px solid;
     margin-top: 5px;
@@ -219,7 +219,7 @@
 }
 
 .snw-ovw-range-type {
-    width: 360px;
+    width: 500px;
     height: 120px;
     border: 1px solid;
     margin-top: 5px;
@@ -227,9 +227,12 @@
 }
 
 .snw-ovw-comparison {
-    width: 360px;
+    width: 500px;
     height: 110px;
     border: 1px solid;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+.snw-ovw-cmp-col {
+    width:20px;
 }
