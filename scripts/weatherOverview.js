@@ -512,9 +512,6 @@ are configured simultaneously.
 function configureDataFields() {
     // Initialize
     initializeDataFields();
-
-    //TODO: Adjust colors */
-
     // Add reference data set
     if (includeMeasurement == true) {
         DataFieldsMeasurement(compSets[0]['setName'], compSets[0]['setCol']);
@@ -546,37 +543,41 @@ function refreshAll(force) {
         // Refresh is done only if autoRefresh is activated or if forced
         // In addition the global doNotRefresh is used to avoid refresh
         // when multiple parameter change events are expected
-        $("#progressbar").jqxProgressBar({ value: 10, width: 100, height: 25 });
+        $("#progressbar").jqxProgressBar({ value:    0, 
+                                           width:    100, 
+                                           height:   25, 
+                                           max:      100,
+                                           showText: false});
 
         // Configure datafields for dataAdapter and xSeriesGroups for charts
         configureDataFields();
 
         //set up the dataAdapter
         setupDataAdapter();
-        $("#progressbar").jqxProgressBar({ value: 20 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 20 });
 
         dataAdapter.dataBind();
-        $("#progressbar").jqxProgressBar({ value: 40 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 40 });
 
         // Set up and refresh the different charts
         setupTemperatureChart();
         $('#tempFunc').jqxChart(tSettings);
-        $("#progressbar").jqxProgressBar({ value: 60 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 60 });
 
         setupPressureChart();
         $('#presFunc').jqxChart(pSettings);
-        $("#progressbar").jqxProgressBar({ value: 80 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 80 });
         
         setupHumidityChart();
         $('#humiFunc').jqxChart(hSettings);
-        $("#progressbar").jqxProgressBar({ value: 100 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 100 });
 
         // Reset refresh indicator
         refreshRequired = false;
         // ... and disable the refresh button
         $("#refreshbutton").jqxButton({ disabled: true });
 
-        $("#progressbar").jqxProgressBar({ value: 0 });
+        $("#progressbar").jqxProgressBar({ animationDuration: 0, value: 0 });
         //$("#progressbar").jqxProgressBar('destroy');
     } else {
         // Refresh is postponed
@@ -855,8 +856,8 @@ function adjustCompSet(ind) {
         tEnd   = compSets[ind]['tEnd'];
         ignoreEvents = true;
         $("#startinput").jqxDateTimeInput('setDate', tStart);
-        ignoreEvents = true;
         $("#endinput").jqxDateTimeInput('setDate', tEnd);
+        ignoreEvents = false;
         refreshAll(false);
     } else {
         if (compSets[ind]['select'] == true) {
