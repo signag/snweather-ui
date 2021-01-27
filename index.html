@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.2" />	
+    <title id='Description'>Weatherstation</title>
+    <link rel="stylesheet" href="styles/jqx.base.css" type="text/css" />
+    <link rel="stylesheet" href="styles/snweather.css" type="text/css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <script type="text/javascript" src="scripts/jqwidgets/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxchart.core.js"></script>
+	<script type="text/javascript" src="scripts/jqwidgets/jqxchart.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxdraw.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxradiobutton.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxradiobutton.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgauge.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.js"></script>
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.selection.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxgrid.filter.js"></script>		
+    <script type="text/javascript" src="scripts/jqwidgets/jqxlistbox.js"></script>	
+    <script type="text/javascript" src="scripts/jqwidgets/jqxdropdownlist.js"></script>	
+    <script type="text/javascript" src="scripts/weatherMain.js"></script>	
+</head>
+<body>
+<header>
+	<div class="snw-flex-container snw-header">
+        <!-- Header -->
+		<div class="snw-flex-item snw-station">
+			<h1>Wetterstation</h1>
+		</div>
+		<div class="snw-flex-item snw-time">
+			<p id="measurement"></p>
+		</div>
+        <div class="snw-flex-item">
+            <div class="snw-flex-container">
+                <div class="snw-flex-item snw-nav">
+                    <input type="button" value="Aktualisieren" id='refreshbutton' />
+                </div>
+                <div class="snw-flex-item snw-nav">
+                    <a style='margin-left: 25px;' target="_blank" href="overview.html" id='overviewbutton'>Verlauf</a>
+                </div>
+            </div>
+        </div>
+	</div>
+</header>
+<main>
+	<div class="snw-flex-container">
+        <!-- Main data area -->
+		<div class="snw-flex-item current">
+            <!-- Current measurements -->
+			<div class="snw-flex-item snw-temp-block">
+                <!-- Temperature block -->
+                <div class="snw-flex-container">
+					<div class="snw-flex-item">
+                        <div class="snw-thermometer" id="thermometer"></div>
+                        <p class="snw-value" id="tempCur"></p>
+					</div>
+					<div class="snw-flex-item">
+                        <div class="snw-cur-graph" id="tempFunc"></div>
+					</div>
+				</div>
+			</div>
+			<div class="snw-flex-item snw-pres-block">
+                <!-- Pressure block -->
+				<div class="snw-flex-container">
+					<div class="snw-flex-item">
+                        <div class="snw-gauge" id="barometer"></div>
+                        <p class="snw-value" id="presCur"></p>
+					</div>
+					<div class="snw-flex-item">
+                        <div class="snw-cur-graph" id="presFunc"></div>
+					</div>
+				</div>
+			</div>
+			<div class="snw-flex-item snw-humi-block">
+                <!-- Humidity block -->
+				<div class="snw-flex-container">
+					<div class="snw-flex-item">
+                        <div class="snw-gauge" id="hygrometer"></div>
+                        <p class="snw-value" id="humiCur"></p>
+					</div>
+					<div class="snw-flex-item">
+                        <div class="snw-cur-graph" id="humiFunc"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="snw-flex-item hour-forecast">
+            <!-- Hourly forecast and alerts -->
+			<div class="snw-flex-container-column">
+				<div class="snw-flex-item">
+                    <div class="snw-fchour-grid" id="forecastHourlyTab"></div>
+				</div>
+				<div class="snw-flex-item">
+                    <div class="snw-fcalerts-grid" id="forecastAlertsTab"></div>
+				</div>
+			</div>
+		</div>
+		<div class="snw-flex-item day-forecast">
+            <!-- Daily forecast -->
+			<div class="snw-flex-container-column">
+				<div class="snw-flex-item">
+                    <div class="snw-fcday-grid" id="forecastDailyTab"></div>
+				</div>
+				<div class="snw-flex-item">
+                    <div class="snw-weatherwidget">
+                        <iframe 
+                            marginheight='0' 
+                            marginwidth='0' 
+                            scrolling='no'
+                            width='300' 
+                            height='200'
+                            src='https://api.wetteronline.de/wetterwidget?gid=10630&modeid=CW2&seourl=coelbe&locationname=Cölbe&lang=de'>
+                        </iframe>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+<footer>
+	<div class="snw-flex-container">
+		<div class="snw-flex-item">
+			<p></p>
+		</div>
+	</div>
+</footer>
+</body>
+</html>

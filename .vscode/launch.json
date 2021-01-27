@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Overview",
+            "name": "Launch overview",
             "request": "launch",
             "type": "chrome",
             "url": "http://localhost/snweather-ui/overview.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch index",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost/snweather-ui/index.html",
             "webRoot": "${workspaceFolder}"
         },
         {
