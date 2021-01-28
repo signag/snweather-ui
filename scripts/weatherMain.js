@@ -1,8 +1,10 @@
 // Global variables
+var dataAdapterRange;
 var dataAdapterList;
 var dataAdapterFcHour
 var dataAdapterFcAlerts;
 var dataAdapterFcDay;
+var sourceRange;
 var sourceFcHour;
 var sourceFcAlerts;
 var sourceFcDay;
@@ -190,7 +192,7 @@ Widgets ara updated once data loading is completed
 ============================================================= */
 function setupDataAdapterRange() {
     // Specify data source
-    var sourceRange = {
+    sourceRange = {
         datatype: "json",
         datafields: [
             { name: 'staTimestamp', type: 'date'},
@@ -210,7 +212,7 @@ function setupDataAdapterRange() {
         url: 'scripts/weatherDataRange.php',
     };
     // Set up data adapter
-    var dataAdapterRange = new $.jqx.dataAdapter(sourceRange, {
+    dataAdapterRange = new $.jqx.dataAdapter(sourceRange, {
         loadComplete: function() {
             // On load completion, update related chart data
             var records = dataAdapterRange.records;
