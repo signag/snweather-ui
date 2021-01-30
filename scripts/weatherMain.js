@@ -1,4 +1,17 @@
+// ===============
+// Global settings
+// ===============
+//
+// Path to i18n lacale JSON files relative to root
+var localesPath     = "/locales";
+// Supported languages
+var supportedLangs = ["de", "en"];
+// Fallback language
+var fallbackLangs   = ["de"];
+//
+// ================
 // Global variables
+// ================
 var dataAdapterRange;
 var dataAdapterList;
 var dataAdapterFcHour
@@ -31,11 +44,63 @@ var days;
 var months;
 
 /*
+=======================
+Localization
+======================= */
+function localize() {
+    // Localize header
+    $('.snw-header').localize();
+
+    // Localize hourly forecast grid
+    defineGridLocalization();
+    $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
+    setupHourlyForecastGrid();
+
+    // TODO: localization of other grids
+}
+
+/*
+================================================================
+Get list of supported languages
+================================================================ */
+function getLngList() {
+    var lngList = [];
+    // Get list of supported languages from i18next
+    // var lngs = i18next.languages;
+    var lngs = supportedLangs;
+
+    for (var i=0; i < lngs.length; i++) {
+        lngList.push(lngs[i]);
+    };
+
+    return lngList;
+}
+
+/*
+================================================================
+Get index of active language in language selection dropdown list
+================================================================ */
+function getLngIndex(lngs) {
+    var ind = 1;
+
+    // Get current language from i18next
+    var lng =i18next.language;
+
+    for (var i=0; i < lngs.length; i++) {
+        if (lng == lngs[i]) {
+            ind = i;
+            break;
+        };
+    };
+
+    return ind;
+}
+
+/*
 ===================
 Set up Thermometer
 =================== */
 function setupThermometer() {
-// ==================================================================================
     // Set up thermometer widget base configuration
     $('#thermometer').jqxLinearGauge({
         orientation: 'vertical',
@@ -989,6 +1054,7 @@ Define grid localization
 ======================== */
 function defineGridLocalization() {
     // Grid localization
+    // TODO: internationalization
     localizationobj = {};
     localizationobj.decimalseparator   = ",";
     localizationobj.thousandsseparator = ".";
@@ -1022,7 +1088,7 @@ function setupHourlyForecastGrid() {
                         
         columns: [
             { 
-                text:          'Zeit', 
+                text:          i18next.t('time'), 
                 datafield:     'timestamp', 
                 cellsformat:   'ddd dd.MM HH:mm', 
                 align:         'right', 
@@ -1358,7 +1424,7 @@ function setupButtons() {
     // Refresh button
     $("#refreshbutton").jqxButton({ 
         width: '150',
-        height: '50',
+        height: '25',
     });
     $('#refreshbutton').click(function() {
         dataAdapterRange.dataBind();
@@ -1374,9 +1440,32 @@ function setupButtons() {
     // Overview button
     $("#overviewbutton").jqxLinkButton({
         width: '150',
-        height: '50',
+        height: '25',
     });
     $('#overviewbutton').click(function() {
+    });
+
+    // Language select dropdown list
+    lngSource = getLngList();
+
+    $("#lngselect").jqxDropDownList({ 
+        source:             lngSource, 
+        width:              '70px', 
+        height:             '25px',
+        selectedIndex:      getLngIndex(lngSource),
+        autoDropDownHeight: true,
+
+    });
+    $('#lngselect').on('select', function (event) {
+        var args = event.args;
+        var item = $('#lngselect').jqxDropDownList('getItem', args.index);
+        var lng  = item.label;
+        i18next.changeLanguage(lng, function(err, t) {
+            if (err) {
+                return console.log('Error in i18next when changing language to ' + lng);
+            }
+            localize();
+        });
     });
 }
 /*
@@ -1385,53 +1474,71 @@ Main
 =================== */
 $(document).ready(function() {
     //
-    // Current data
-    //
-    // Setup thermometer widget
-    setupThermometer();
-    // Setup barometer widget
-    setupBarometer();
-    // Setup barometer widget
-    setupHygrometer();
-    // Set up data adapter for thermometer, barometer and hygrometer
-    setupDataAdapterRange();
-    // Set up data adapter for temperature, pressure and humidity diagrams
-    setupDataAdapterList();
-    // Set up temperature chart
-    setupTemperatureDiagram();
-    // Set up pressure chart
-    setupPressureDiagram();
-    // Set up humidity chart
-    setupHumidityDiagram();
-    //
-    // Hourly forecast
-    //
-    // Set up data adapter hourly forecast
-    setupDataAdapterFcHour();
-    // Define various renderers 
-    defineRenderers();
-    // Define variable class names 
-    defineVariableClassNames();
-    // Define grid localization 
-    defineGridLocalization();
-    // Set up hourly forecast grid
-    setupHourlyForecastGrid();
-    //
-    // Alertts grid
-    //
-    // Set up data adapter for alerts
-    setupDataAdapterAlerts();
-    // Set up alerts grid
-    setupAlertsGrid();
-    //
-    // Daily forecast grid
-    //
-    // Set up data adapter for daily forecast
-    setupDataAdapterFcDaily();
-    // Set up daily forecast grid
-    setupDailyForecastGrid();
-    //
-    // Buttons
-    //
-    setupButtons();
+    // Localization
+    var root = location.pathname.slice(0, location.pathname.indexOf('/', 1));
+    i18next.use(i18nextHttpBackend);
+    i18next.use(i18nextBrowserLanguageDetector);
+    i18next.init({
+        detection: {
+        },
+        supportedLngs: supportedLangs,
+        fallbackLng: fallbackLangs,
+        debug: true,
+        backend: {
+            loadPath: root + localesPath + '/snw_{{lng}}.json'
+        },
+    }, function(err, t) {
+        jqueryI18next.init(i18next, $);
+        localize();
+        //
+        // Current data
+        //
+        // Setup thermometer widget
+        setupThermometer();
+        // Setup barometer widget
+        setupBarometer();
+        // Setup barometer widget
+        setupHygrometer();
+        // Set up data adapter for thermometer, barometer and hygrometer
+        setupDataAdapterRange();
+        // Set up data adapter for temperature, pressure and humidity diagrams
+        setupDataAdapterList();
+        // Set up temperature chart
+        setupTemperatureDiagram();
+        // Set up pressure chart
+        setupPressureDiagram();
+        // Set up humidity chart
+        setupHumidityDiagram();
+        //
+        // Hourly forecast
+        //
+        // Set up data adapter hourly forecast
+        setupDataAdapterFcHour();
+        // Define various renderers 
+        defineRenderers();
+        // Define variable class names 
+        defineVariableClassNames();
+        // Define grid localization 
+        defineGridLocalization();
+        // Set up hourly forecast grid
+        setupHourlyForecastGrid();
+        //
+        // Alertts grid
+        //
+        // Set up data adapter for alerts
+        setupDataAdapterAlerts();
+        // Set up alerts grid
+        setupAlertsGrid();
+        //
+        // Daily forecast grid
+        //
+        // Set up data adapter for daily forecast
+        setupDataAdapterFcDaily();
+        // Set up daily forecast grid
+        setupDailyForecastGrid();
+        //
+        // Buttons
+        //
+        setupButtons();
+    });
 });

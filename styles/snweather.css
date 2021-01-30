@@ -19,9 +19,35 @@
 
 .snw-flex-item {
     border: 0px solid;
-    margin: 1px;
-    padding: 1px;
+    margin: 0px;
+    padding: 0px;
     background: #ffffff;
+}
+
+.snw-head1 {
+    width: 15%;
+    min-width: 231px;
+}
+
+.snw-head2 {
+    width: 25%;
+    min-width: 316px;
+}
+.snw-head3 {
+    width: 20%;
+    min-width: 151px;
+}
+.snw-head4 {
+    width: calc(100vw - max(15vw, 231px) - max(25vw, 316px) - max(20vw, 151px) - 4vw);
+}
+
+.snw-lngselectimg {
+	height: 25px; 
+}
+
+.snw-lngselecttab {
+    margin-right: 0;
+    margin-left: auto;
 }
 
 .snw-cur-graph {
@@ -50,17 +76,16 @@
 }
 
 .snw-header {
-    align-content: center;
+    padding: 5px 0;
 }
 
 .snw-station {
-    align-items: center;
     margin-right: 10px;
 }
 
 .snw-nav {
-    align-items: center;
     margin-right: 5px;
+    padding: 5px 0;
 }
 
 .snw-station-id {
@@ -69,9 +94,8 @@
 }
 
 .snw-time {
-    align-content: center;
-    margin-right: 10px;
-    padding-top: 17px;
+    padding: 10px 0;
+    margin-right: 0px;
     border: 0px dotted;
 }
 
