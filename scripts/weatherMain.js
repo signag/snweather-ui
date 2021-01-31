@@ -42,21 +42,60 @@ var dvalclassname;
 var localizationobj;
 var days;
 var months;
+var curTimestamp;
 
 /*
 =======================
 Localization
 ======================= */
-function localize() {
+function localize(initial) {
+    var lng = i18next.language;
+
     // Localize header
     $('.snw-header').localize();
 
-    // Localize hourly forecast grid
-    defineGridLocalization();
-    $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
-    setupHourlyForecastGrid();
+    // Localize buttons
+    $("#overviewbutton").jqxButton({ value: i18next.t("history") });
+    $("#refreshbutton" ).jqxButton({ value: i18next.t("refresh") });
 
-    // TODO: localization of other grids
+    if (initial == false) {
+        // Get range data to initiate lcalization of measurement time
+        setupDataAdapterRange();
+    }
+
+    // Define various renderers with localization
+    defineRenderers();
+    // Define grid localization 
+    defineGridLocalization();
+
+    if (initial == false) {
+        // Localize hourly forecast grid
+        $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
+        setupHourlyForecastGrid();
+
+        // Localize alerts grid
+        $("#forecastAlertsTab").jqxGrid('localizestrings', localizationobj);
+        setupAlertsGrid();
+
+        // Localize daily forecast grid
+        $("#forecastDailyTab").jqxGrid('localizestrings', localizationobj);
+        setupDailyForecastGrid();
+    };
+}
+
+/*
+===================================================
+Localization of measurement time
+
+This needs to be provided as separate function
+because it is none after completion of data loading
+=================================================== */
+function localizeMeasurementTime() {
+    var lng = i18next.language;
+    document.getElementById("measurement").innerHTML
+        = i18next.t("measurementFrom") + " "
+        + curTimestamp.toLocaleDateString(lng) + " " + i18next.t("measurementAt") + " "
+        + curTimestamp.toLocaleTimeString(lng) + " " + i18next.t("measurementHour");
 }
 
 /*
@@ -284,12 +323,8 @@ function setupDataAdapterRange() {
             var length  = records.length;
             if (length > 0) {
                 var record = records[0];
-
-                // Update measurement time
-                document.getElementById("measurement").innerHTML
-                    = "Messwerte vom "
-                    + record.curTimestamp.toLocaleDateString('de-DE') + " um " 
-                    + record.curTimestamp.toLocaleTimeString('de-DE') + " Uhr";
+                curTimestamp = record.curTimestamp;
+                localizeMeasurementTime();
 
                 // Update thermometer
                 var tRanges = [{
@@ -786,27 +821,27 @@ function defineRenderers() {
     // renderer for property
     propertyrenderer = function(row, datafield, value) {
         switch (row){
-            case 0 : return '<div style="margin-top: 8px; margin-left: 2px;">Datum</div>';
-            case 1 : return '<div style="margin-top: 8px; margin-left: 2px;">Sonnenaufgang</div>';
-            case 2 : return '<div style="margin-top: 8px; margin-left: 2px;">Sonnenuntergang</div>';
-            case 3 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Morgen</div>';
-            case 4 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Tag</div>';
-            case 5 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Abend</div>';
-            case 6 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Nacht</div>';
-            case 7 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Minimum</div>';
-            case 8 : return '<div style="margin-top: 8px; margin-left: 2px;">Temp.: Maximum</div>';
-            case 9 : return '<div style="margin-top: 8px; margin-left: 2px;">Luftdruck</div>';
-            case 10: return '<div style="margin-top: 8px; margin-left: 2px;">Luftfeuchtigkeit</div>';
-            case 11: return '<div style="margin-top: 8px; margin-left: 2px;">Windgeschwind.</div>';
-            case 12: return '<div style="margin-top: 8px; margin-left: 2px;">Windrichtung</div>';
-            case 13: return '<div style="margin-top: 8px; margin-left: 2px;">Wolken</div>';
-            case 14: return '<div style="margin-top: 8px; margin-left: 2px;">UV Index</div>';
-            case 15: return '<div style="margin-top: 8px; margin-left: 2px;">Niederschl. Wahrs.</div>';
-            case 16: return '<div style="margin-top: 8px; margin-left: 2px;">Regen</div>';
-            case 17: return '<div style="margin-top: 8px; margin-left: 2px;">Schnee</div>';
-            case 18: return '<div style="margin-top: 8px; margin-left: 2px;">Beschreibung</div>';
-            case 19: return '<div style="margin-top: 8px; margin-left: 2px;">Icon</div>';
-            case 20: return '<div style="margin-top: 8px; margin-left: 2px;">Alarme</div>';
+            case 0 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('date')       + '</div>';
+            case 1 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('sunrise')    + '</div>';
+            case 2 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('sunset')     + '</div>';
+            case 3 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpMorning') + '</div>';
+            case 4 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpDay')     + '</div>';
+            case 5 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpEvening') + '</div>';
+            case 6 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpNight')   + '</div>';
+            case 7 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpMin')     + '</div>';
+            case 8 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('tmpMax')     + '</div>';
+            case 9 : return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('pressure')   + '</div>';
+            case 10: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('humidity')   + '</div>';
+            case 11: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('windSpeed')  + '</div>';
+            case 12: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('windDir')    + '</div>';
+            case 13: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('clouds')     + '</div>';
+            case 14: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('uvIndex')    + '</div>';
+            case 15: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('pop')        + '</div>';
+            case 16: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('rain')       + '</div>';
+            case 17: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('snow')       + '</div>';
+            case 18: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('descript')   + '</div>';
+            case 19: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('icon')       + '</div>';
+            case 20: return '<div style="margin-top: 8px; margin-left: 2px;">' + i18next.t('alerts')     + '</div>';
         }
     }
 
@@ -1056,22 +1091,72 @@ function defineGridLocalization() {
     // Grid localization
     // TODO: internationalization
     localizationobj = {};
-    localizationobj.decimalseparator   = ",";
-    localizationobj.thousandsseparator = ".";
+    localizationobj.decimalseparator   = i18next.t("numSeparators.decimal");
+    localizationobj.thousandsseparator = i18next.t("numSeparators.thousands");
     days = {
         // full day names
-        names: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+        names: [
+            i18next.t("weekdays.sunday"),
+            i18next.t("weekdays.monday"),
+            i18next.t("weekdays.tuesday"),
+            i18next.t("weekdays.wednesday"),
+            i18next.t("weekdays.thursday"),
+            i18next.t("weekdays.friday"),
+            i18next.t("weekdays.saturday"),
+        ],
         // abbreviated day names
-        namesAbbr: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+        namesAbbr: [
+            i18next.t("weekdays.sunday_a"),
+            i18next.t("weekdays.monday_a"),
+            i18next.t("weekdays.tuesday_a"),
+            i18next.t("weekdays.wednesday_a"),
+            i18next.t("weekdays.thursday_a"),
+            i18next.t("weekdays.friday_a"),
+            i18next.t("weekdays.saturday_a"),
+        ],
         // shortest day names
-        namesShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+        namesShort: [
+            i18next.t("weekdays.sunday_s"),
+            i18next.t("weekdays.monday_s"),
+            i18next.t("weekdays.tuesday_s"),
+            i18next.t("weekdays.wednesday_s"),
+            i18next.t("weekdays.thursday_s"),
+            i18next.t("weekdays.friday_s"),
+            i18next.t("weekdays.saturday_s"),
+        ],
     };
     localizationobj.days = days;
     months = {
         // full month names (13 months for lunar calendards -- 13th month should be "" if not lunar)
-        names: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember", ""],
+        names: [
+            i18next.t("months.january"),
+            i18next.t("months.february"),
+            i18next.t("months.march"),
+            i18next.t("months.april"),
+            i18next.t("months.may"),
+            i18next.t("months.june"),
+            i18next.t("months.july"),
+            i18next.t("months.august"),
+            i18next.t("months.september"),
+            i18next.t("months.october"),
+            i18next.t("months.november"),
+            i18next.t("months.december"),
+        ],
         // abbreviated month names
-        namesAbbr: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dez", ""],
+        namesAbbr: [
+            i18next.t("months.january_a"),
+            i18next.t("months.february_a"),
+            i18next.t("months.march_a"),
+            i18next.t("months.april_a"),
+            i18next.t("months.may_a"),
+            i18next.t("months.june_a"),
+            i18next.t("months.july_a"),
+            i18next.t("months.august_a"),
+            i18next.t("months.september_a"),
+            i18next.t("months.october_a"),
+            i18next.t("months.november_a"),
+            i18next.t("months.december_a"),
+        ],
     };
     localizationobj.months = months;
 }
@@ -1097,7 +1182,7 @@ function setupHourlyForecastGrid() {
                 pinned:        true,
             },
             { 
-                text:          'T', 
+                text:          i18next.t('isday'), 
                 datafield:     'isday', 
                 cellsrenderer: daynightrenderer,
                 cellclassname: daynightclassname,
@@ -1105,7 +1190,7 @@ function setupHourlyForecastGrid() {
                 pinned:        true,
             },
             { 
-                text:          'Icon', 
+                text:          i18next.t('icon'), 
                 datafield:     'icon',
                 align:         'center', 
                 cellsalign:    'center', 
@@ -1113,7 +1198,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: iconrenderer,
             },
             { 
-                text:          'Temp.', 
+                text:          i18next.t('tmpShort'), 
                 datafield:     'temperature', 
                 cellsformat:   'f1', 
                 align:         'right', 
@@ -1123,14 +1208,14 @@ function setupHourlyForecastGrid() {
                 cellclassname: tempclassname,
             },
             { 
-                text:          'Beschreibung', 
+                text:          i18next.t('descript'), 
                 datafield:     'description',
                 align:         'left', 
                 cellsalign:    'left', 
                 width:         150,
             },
             { 
-                text:          'Alarme', 
+                text:          i18next.t('alerts'), 
                 datafield:     'alerts',
                 align:         'center', 
                 cellsalign:    'center', 
@@ -1138,7 +1223,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: alertrenderer,
             },
             { 
-                text:          'Regen', 
+                text:          i18next.t('rain'), 
                 datafield:     'rain',
                 cellsformat:   'f2', 
                 align:         'right', 
@@ -1147,7 +1232,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: poprenderer,
             },
             { 
-                text:          'Schnee', 
+                text:          i18next.t('snow'), 
                 datafield:     'snow',
                 align:         'right', 
                 cellsformat:   'f2', 
@@ -1156,7 +1241,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: poprenderer,
             },
             { 
-                text:          'Luftdruck', 
+                text:          i18next.t('pressure'), 
                 datafield:     'pressure',
                 cellsformat:   'f', 
                 align:         'right', 
@@ -1165,7 +1250,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: presrenderer,
             },
             { 
-                text:          'Luftfcht.', 
+                text:          i18next.t('humidity_s'), 
                 datafield:     'humidity',
                 align:         'right', 
                 cellsalign:    'right', 
@@ -1173,7 +1258,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: percrenderer,
             },
             { 
-                text:          'Wolken', 
+                text:          i18next.t('clouds'), 
                 datafield:     'clouds',
                 align:         'right', 
                 cellsalign:    'right', 
@@ -1181,7 +1266,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: percrenderer,
             },
             { 
-                text:          'UV Index', 
+                text:          i18next.t('uvIndex'), 
                 datafield:     'uvi',
                 cellsformat:   'f2', 
                 align:         'right', 
@@ -1190,7 +1275,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: uvrenderer,
             },
             { 
-                text:          'Sichtweite', 
+                text:          i18next.t('visibility'), 
                 datafield:     'visibility',
                 cellsformat:   'n', 
                 align:         'right', 
@@ -1199,7 +1284,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: distrenderer,
             },
             { 
-                text:          'Windgeschw.', 
+                text:          i18next.t('windSpeed_s'), 
                 datafield:     'windspeed',
                 cellsformat:   'f1', 
                 align:         'right', 
@@ -1208,8 +1293,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: speedrenderer,
             },
             { 
-                text:          'Windrichtung', 
-                datafield:     'winddir',
+                text:          i18next.t('windDir'),
                 align:         'right', 
                 cellsalign:    'right', 
                 width:         95,
@@ -1262,7 +1346,7 @@ function setupAlertsGrid() {
         autoheight:    true,
         columns: [
             { 
-                text:        'Beginn', 
+                text:        i18next.t('begin'), 
                 datafield:   'start', 
                 cellsformat: 'ddd dd.MM HH:mm', 
                 align:       'right', 
@@ -1270,7 +1354,7 @@ function setupAlertsGrid() {
                 width:       120,
             },
             { 
-                text:        'Ende', 
+                text:        i18next.t('end'), 
                 datafield:   'end', 
                 cellsformat: 'ddd dd.MM HH:mm', 
                 align:       'right', 
@@ -1278,13 +1362,13 @@ function setupAlertsGrid() {
                 width:       120,
             },
             { 
-                text:        'Ereignis', 
+                text:        i18next.t('event'), 
                 datafield:   'event', 
                 width:       140,
             },
             { 
-                text:        'Beschreibung', 
-                datafield:   'description', 
+                text:        i18next.t('descript'), 
+                datafield:   'description',
                 width:       400,
             },
         ],
@@ -1340,14 +1424,14 @@ function setupDailyForecastGrid() {
         showheader:    false,
         columns: [
             { 
-                text:          'Eigenschaft', 
+                text:          i18next.t('property'), 
                 datafield:     'property', 
                 width:         120,
                 pinned:        true,
                 cellsrenderer: propertyrenderer,
             },
             { 
-                text:          'Tag 1', 
+                text:          i18next.t('day') + ' 1', 
                 datafield:     'day_01', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1355,7 +1439,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 2', 
+                text:          i18next.t('day') + ' 2', 
                 datafield:     'day_02', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1363,7 +1447,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 3', 
+                text:          i18next.t('day') + ' 3', 
                 datafield:     'day_03', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1371,7 +1455,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 4', 
+                text:          i18next.t('day') + ' 4', 
                 datafield:     'day_04', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1379,7 +1463,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 5', 
+                text:          i18next.t('day') + ' 5', 
                 datafield:     'day_05', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1387,7 +1471,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 6', 
+                text:          i18next.t('day') + ' 6', 
                 datafield:     'day_06', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1395,7 +1479,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 7', 
+                text:          i18next.t('day') + ' 7', 
                 datafield:     'day_07', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1403,7 +1487,7 @@ function setupDailyForecastGrid() {
                 cellclassname: dvalclassname,
             },
             { 
-                text:          'Tag 8', 
+                text:          i18next.t('day') + ' 8', 
                 datafield:     'day_08', 
                 width:         85,
                 cellsalign:    'right', 
@@ -1423,8 +1507,9 @@ Set up buttons
 function setupButtons() {
     // Refresh button
     $("#refreshbutton").jqxButton({ 
-        width: '150',
-        height: '25',
+        width:        '150',
+        height:       '25',
+        textPosition: 'center',
     });
     $('#refreshbutton').click(function() {
         dataAdapterRange.dataBind();
@@ -1438,11 +1523,14 @@ function setupButtons() {
     });
 
     // Overview button
-    $("#overviewbutton").jqxLinkButton({
-        width: '150',
-        height: '25',
+    $("#overviewbutton").jqxButton({
+        width:        '150',
+        height:       '25',
+        textPosition: 'center',
     });
     $('#overviewbutton').click(function() {
+        var url = location.pathname.slice(0, location.pathname.indexOf('/', 1)) + "/overview.html";
+        window.open(url, "_blank");
     });
 
     // Language select dropdown list
@@ -1464,7 +1552,7 @@ function setupButtons() {
             if (err) {
                 return console.log('Error in i18next when changing language to ' + lng);
             }
-            localize();
+            localize(false);
         });
     });
 }
@@ -1489,7 +1577,7 @@ $(document).ready(function() {
         },
     }, function(err, t) {
         jqueryI18next.init(i18next, $);
-        localize();
+        localize(true);
         //
         // Current data
         //
@@ -1515,11 +1603,11 @@ $(document).ready(function() {
         // Set up data adapter hourly forecast
         setupDataAdapterFcHour();
         // Define various renderers 
-        defineRenderers();
+        //defineRenderers();
         // Define variable class names 
         defineVariableClassNames();
         // Define grid localization 
-        defineGridLocalization();
+        //defineGridLocalization();
         // Set up hourly forecast grid
         setupHourlyForecastGrid();
         //

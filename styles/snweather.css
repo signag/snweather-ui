@@ -257,6 +257,13 @@
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
 .snw-ovw-cmp-col {
     width:20px;
+}
+
+.snw-service-iframe {
+    margin: 0;
+    width: 300; 
+    height: 200;
 }
