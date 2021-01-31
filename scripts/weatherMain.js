@@ -679,6 +679,7 @@ function setupDataAdapterFcHour() {
 Define various renderers 
 ======================== */
 function defineRenderers() {
+    var lng = i18next.language;
 
     // renderer for icons
     iconrenderer = function(row, datafield, value) {
@@ -697,7 +698,7 @@ function defineRenderers() {
     // renderer for temperature
     temprenderer = function(row, datafield, value) {
         return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-              + value.toLocaleString(undefined, 
+              + value.toLocaleString(lng, 
                                     {
                                      minimumFractionDigits: 1, 
                                      maximumFractionDigits: 1,
@@ -709,7 +710,7 @@ function defineRenderers() {
     poprenderer = function(row, datafield, value) {
         if (value > 0){
             return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                + value.toLocaleString(undefined, 
+                + value.toLocaleString(lng, 
                                         {
                                         minimumFractionDigits: 2, 
                                         maximumFractionDigits: 2,
@@ -723,7 +724,7 @@ function defineRenderers() {
     // renderer for pressure
     presrenderer = function(row, datafield, value) {
         return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-              + value.toLocaleString(undefined, 
+              + value.toLocaleString(lng, 
                                     {
                                      minimumFractionDigits: 0, 
                                      maximumFractionDigits: 0,
@@ -735,7 +736,7 @@ function defineRenderers() {
     percrenderer = function(row, datafield, value) {
         if (value > 0){
             return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                + value.toLocaleString(undefined, 
+                + value.toLocaleString(lng, 
                                         {
                                         minimumFractionDigits: 0, 
                                         maximumFractionDigits: 0,
@@ -750,7 +751,7 @@ function defineRenderers() {
     distrenderer = function(row, datafield, value) {
         if (value > 0){
             return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                + value.toLocaleString(undefined, 
+                + value.toLocaleString(lng, 
                                         {
                                         minimumFractionDigits: 0, 
                                         maximumFractionDigits: 0,
@@ -765,7 +766,7 @@ function defineRenderers() {
     uvrenderer = function(row, datafield, value) {
         if (value > 0){
             return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                + value.toLocaleString(undefined, 
+                + value.toLocaleString(lng, 
                                         {
                                         minimumFractionDigits: 2, 
                                         maximumFractionDigits: 2,
@@ -780,7 +781,7 @@ function defineRenderers() {
     speedrenderer = function(row, datafield, value) {
         if (value > 0){
             return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                + value.toLocaleString(undefined, 
+                + value.toLocaleString(lng, 
                                         {
                                         minimumFractionDigits: 0, 
                                         maximumFractionDigits: 0,
@@ -879,7 +880,7 @@ function defineRenderers() {
             case 7 : 
             case 8 : 
                 return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 1, 
                                                 maximumFractionDigits: 1,
@@ -887,7 +888,7 @@ function defineRenderers() {
                         + ' °C</div>';
             case 9 : 
                 return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 0, 
                                                 maximumFractionDigits: 0,
@@ -897,7 +898,7 @@ function defineRenderers() {
             case 13: 
                 if (value > 0){
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 0, 
                                                 maximumFractionDigits: 0,
@@ -909,7 +910,7 @@ function defineRenderers() {
             case 11: 
                 if (value > 0){
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 0, 
                                                 maximumFractionDigits: 0,
@@ -941,7 +942,7 @@ function defineRenderers() {
             case 14: 
                 if (value > 0){
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 2, 
                                                 maximumFractionDigits: 2,
@@ -954,7 +955,7 @@ function defineRenderers() {
                 if (value > 0){
                     val = 100 * value
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + val.toLocaleString(undefined, 
+                        + val.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 0, 
                                                 maximumFractionDigits: 0,
@@ -967,7 +968,7 @@ function defineRenderers() {
             case 17: 
                 if (value > 0){
                     return '<div class="jqx-grid-cell-right-align" style="margin-top: 8px;">' 
-                        + value.toLocaleString(undefined, 
+                        + value.toLocaleString(lng, 
                                                 {
                                                 minimumFractionDigits: 2, 
                                                 maximumFractionDigits: 2,
