@@ -1530,7 +1530,9 @@ function setupButtons() {
         textPosition: 'center',
     });
     $('#overviewbutton').click(function() {
-        var url = location.pathname.slice(0, location.pathname.indexOf('/', 1)) + "/overview.html";
+        var url = location.pathname.slice(0, location.pathname.indexOf('/', 1)) 
+                + "/overview.html"
+                + "?lng=" + i18next.language;
         window.open(url, "_blank");
     });
 
@@ -1572,15 +1574,13 @@ $(document).ready(function() {
         },
         supportedLngs: supportedLangs,
         fallbackLng: fallbackLangs,
-        debug: true,
+        debug: false,
         backend: {
             loadPath: root + localesPath + '/snw_{{lng}}.json'
         },
     }, function(err, t) {
         jqueryI18next.init(i18next, $);
         localize(true);
-        //
-        // Current data
         //
         // Setup thermometer widget
         setupThermometer();

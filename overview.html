@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="styles/snweather.css" type="text/css" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <script type="text/javascript" src="scripts/jqwidgets/jquery.min.js"></script>
-    <script type="text/javascript" src="scripts/i18next/i18next.min.js" ></script>
     <script type="text/javascript" src="scripts/i18next/i18nextBrowserLanguageDetector.min.js" ></script>
+    <script type="text/javascript" src="scripts/i18next/i18next.min.js" ></script>
     <script type="text/javascript" src="scripts/i18next/i18nextHttpBackend.min.js" ></script>
     <script type="text/javascript" src="scripts/i18next/jquery-i18next.min.js" ></script>
     <script type="text/javascript" src="scripts/jqwidgets/jqxcore.js"></script>
@@ -42,20 +42,16 @@
 	<div class="snw-flex-container snw-header">
         <!-- Header -->
 		<div class="snw-flex-item snw-station">
-			<div class="snw-station-id" data-i18n="station">Wetterstation</div>
+			<div class="snw-station-id" data-i18n="station"></div>
 		</div>
 		<div class="snw-flex-item snw-nav">
             <table>
                 <tr>
-                    <td>
-                        Von:
-                    </td>
+                    <td data-i18n="from_"></td>
                     <td>
                         <div id='startinput'></div>
                     </td>
-                    <td>
-                        Bis:
-                    </td>
+                    <td data-i18n="to_"></td>
                     <td>
                         <div id='endinput'></div>
                     </td>
@@ -66,10 +62,10 @@
             <table>
                 <tr>
                     <td>
-                        <div id="autoRefresh">Autom.aktualisieren</div>
+                        <div id="autoRefresh" data-i18n='autorefresh'></div>
                     </td>
                     <td>
-                        <input type="button" value="Aktualisieren" id='refreshbutton' />
+                        <input type="button" id='refreshbutton' />
                     </td>
                     <td>
                         <div id="progressbar"></div>
@@ -97,51 +93,41 @@
         <div class="snw-flex-item">
             <div class="snw-flex-container-column">
                 <div class="snw-flex-item snw-ovw-content-select">
-                    Anzeigen:
-                    <div id="selectMeasurement">Messwerte</div>
-                    <div id="selectForecast">Vorhersagen</div>
+                    <div data-i18n="display_"></div>
+                    <div id="selectMeasurement" data-i18n="measurementValues"></div>
+                    <div id="selectForecast"    data-i18n="forecasts"></div>
                 </div>
                 <div class="snw-flex-item snw-ovw-range-type">
-                    Zeitraum:
-                    <div id="periodWeek">Woche</div>
-                    <div id="periodMonth">Monat</div>
-                    <div id="periodYear">Jahr</div>
-                    <div id="periodFree">Frei</div>
+                    <div data-i18n="range"></div>
+                    <div id="periodWeek"  data-i18n="week" ></div>
+                    <div id="periodMonth" data-i18n="month"></div>
+                    <div id="periodYear"  data-i18n="year" ></div>
+                    <div id="periodFree"  data-i18n="free" ></div>
                 </div>
                 <div class="snw-flex-item snw-ovw-comparison">
-                    Vergleich:
+                    <div data-i18n="comparison_"></div>
                     <table class="snw-ovw-cmp-tab">
                         <tr class="snw-ovw-cmp-row">
                             <td class="snw-ovw-cmp-sel">
                                 <div id="set0select"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Jahr:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="year_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set0year"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Monat:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="month_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set0month"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Woche:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="week_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set0week"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                ID:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="id_"></td>
                             <td class="snw-ovw-cmp-nam">
                                 <div id="set0name"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Farbe:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="color_"></td>
                             <td class="snw-ovw-cmp-col">
                                 <div id="set0color">---</div>
                             </td>
@@ -150,33 +136,23 @@
                             <td class="snw-ovw-cmp-sel">
                                 <div id="set1select"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Jahr:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="year_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set1year"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Monat:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="month_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set1month"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Woche:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="week_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set1week"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                ID:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="id_"></td>
                             <td class="snw-ovw-cmp-nam">
                                 <div id="set1name"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Farbe:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="color_"></td>
                             <td class="snw-ovw-cmp-col">
                                 <div id="set1color">---</div>
                             </td>
@@ -185,33 +161,23 @@
                             <td class="snw-ovw-cmp-sel">
                                 <div id="set2select"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Jahr:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="year_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set2year"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Monat:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="month_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set2month"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Woche:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="week_"></td>
                             <td class="snw-ovw-cmp-inp">
                                 <div id="set2week"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                ID:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="id_"></td>
                             <td class="snw-ovw-cmp-nam">
                                 <div id="set2name"></div>
                             </td>
-                            <td class="snw-ovw-cmp-lbl">
-                                Farbe:
-                            </td>
+                            <td class="snw-ovw-cmp-lbl" data-i18n="color_"></td>
                             <td class="snw-ovw-cmp-col">
                                 <div id="set2color">---</div>
                             </td>

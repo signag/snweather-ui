@@ -1,18 +1,31 @@
 {
     "alerts"            : "Alarme",
+    "autorefresh"       : "Autom. aktualisieren",
     "begin"             : "Beginn",
     "clouds"            : "Wolken",
+    "color_"            : "Farbe:",
+    "comparison_"       : "Vergleich:",
     "date"              : "Datum",
     "day"               : "Tag",
     "descript"          : "Beschreibung",
+    "display_"          : "Anzeigen:",
     "end"               : "Ende",
     "event"             : "Ereignis",
+    "forecasts"         : "Vorhersagen",
+    "free"              : "Frei",
+    "from_"             : "Von:",
+    "history"           : "Verlauf",
     "humidity"          : "Luftfeuchtigkeit",
     "humidity_s"        : "Luftfcht",
+    "icon"              : "Icon",
+    "id_"               : "ID:",
     "isday"             : "T",
     "measurementAt"     : "um",
     "measurementFrom"   : "Messwerte vom",
     "measurementHour"   : "Uhr",
+    "measurementValues" : "Messwerte",
+    "month"             : "Monat",
+    "month_"            : "Monat:",
     "months": {
         "january"       : "Januar",
         "january_a"     : "Jan",
@@ -39,8 +52,6 @@
         "december"      : "Dezember",
         "december_a"    : "Dez"
     },
-    "history"           : "Verlauf",
-    "icon"              : "Icon",
     "numSeparators": {
         "decimal"       : ",",
         "thousands"     : "."
@@ -49,6 +60,7 @@
     "pressure"          : "Luftdruck",
     "property"          : "Eigenschaft",
     "rain"              : "Regen",
+    "range"             : "Zeitraum:",
     "refresh"           : "Aktualisieren",
     "snow"              : "Schnee",
     "station"           : "Wetterstation",
@@ -62,8 +74,11 @@
     "tmpMorning"        : "Temp.: Morgen",
     "tmpNight"          : "Temp.: Nacht",
     "tmpShort"          : "Temp.",
+    "to_"               : "Bis:",
     "uvIndex"           : "UV Index",
     "visibility"        : "Sichtweite",
+    "week"              : "Woche",
+    "week_"             : "Woche:",
     "weekdays": {
         "sunday"        : "Sonntag",
         "sunday_a"      : "So",
@@ -89,5 +104,7 @@
     },
     "windDir"           : "Windrichtung",
     "windSpeed"         : "Windgeschwind.",
-    "windSpeed_s"       : "Windgeschw."
+    "windSpeed_s"       : "Windgeschw.",
+    "year"              : "Jahr",
+    "year_"             : "Jahr:"
 }

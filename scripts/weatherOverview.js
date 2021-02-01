@@ -14,6 +14,19 @@ var includeForecast = true;
 const PeriodEnum = Object.freeze({ "week": 1, "month": 2, "year": 3, "free": 4});
 var period = PeriodEnum.month;
 
+//
+// Path to i18n lacale JSON files relative to root
+var localesPath     = "/locales";
+// Supported languages
+var supportedLangs  = ["de", "en"];
+// Fallback language
+var fallbackLangs   = ["de"];
+// Order for language detection
+// The page does not provide the capability to change the language
+// When launched from index.html, the current language for this page is transferred 
+// through query string.
+var lngDetectOrder  = ['querystring', 'navigator', 'htmlTag', 'subdomain'];
+
 // -- Comparison sets
 //    These are used for the comparison selector on the page
 //    and serve ase base for datafields for data adapter
@@ -204,6 +217,23 @@ var pSettings;
 var pSeriesGroups;
 var hSettings;
 var hSeriesGroups;
+
+/*
+=======================
+Localization
+======================= */
+function localize(initial) {
+    var lng = i18next.language;
+
+    // Localize header
+    $('.snw-header').localize();
+
+    // Localize data
+    $('.snw-data').localize();
+
+    // Localize buttons
+    $("#refreshbutton" ).jqxButton({ value: i18next.t("refresh") });
+}
 
 /*
 ======================================
@@ -1204,7 +1234,11 @@ function toggleRefreshButton() {
 Set up refresh button
 ===================== */
 function setupRefreshButton() {
-    $("#refreshbutton").jqxButton({ width: 100, height: 25 });
+    $("#refreshbutton").jqxButton({ 
+        width       : 100,
+        height      : 25,
+        textPosition: 'center',
+    });
     toggleRefreshButton();
     $('#refreshbutton').click(function() {
         refreshAll(true);
@@ -1225,44 +1259,64 @@ function setupProgressBar() {
 Main
 =================== */
 $(document).ready(function() {
-    // Auto refresh checkbox and button
-    setupAutoRefresh();
-    setupRefreshButton();
+    //
+    // Localization
+    var root = location.pathname.slice(0, location.pathname.indexOf('/', 1));
+    i18next.use(i18nextHttpBackend);
+    i18next.use(i18nextBrowserLanguageDetector);
+    i18next.init({
+        detection: {
+            order    : lngDetectOrder,
+        },
+        supportedLngs: supportedLangs,
+        fallbackLng  : fallbackLangs,
+        debug: false,
+        backend: {
+            loadPath : root + localesPath + '/snw_{{lng}}.json'
+        },
+    }, function(err, t) {
+        jqueryI18next.init(i18next, $);
+        localize(true);
+        //
+        // Auto refresh checkbox and button
+        setupAutoRefresh();
+        setupRefreshButton();
 
-    // Set selector for display period
-    setupPeriodSelector();
+        // Set selector for display period
+        setupPeriodSelector();
 
-    // Set up selector for content types (measurement / forecast)
-    setupContentSelectorMeasurement();
-    setupContentSelectorForecast();
+        // Set up selector for content types (measurement / forecast)
+        setupContentSelectorMeasurement();
+        setupContentSelectorForecast();
 
-    // Set up radio buttons for selection of range type
-    setupRangeSelectorWeek();
-    setupRangeSelectorMonth();
-    setupRangeSelectorYear();
-    setupRangeSelectorFree();
+        // Set up radio buttons for selection of range type
+        setupRangeSelectorWeek();
+        setupRangeSelectorMonth();
+        setupRangeSelectorYear();
+        setupRangeSelectorFree();
 
-    // Set up selectors for comparison data sets
-    prepareCompSets();
-    setupComparisonSelectors();
+        // Set up selectors for comparison data sets
+        prepareCompSets();
+        setupComparisonSelectors();
 
-    // Configure data fields
-    configureDataFields();
+        // Configure data fields
+        configureDataFields();
 
-    // Set up data adapter
-    setupDataAdapter();
+        // Set up data adapter
+        setupDataAdapter();
 
-    // Define and draw temperture chart
-    setupTemperatureChart();
-    $('#tempFunc').jqxChart(tSettings);
+        // Define and draw temperture chart
+        setupTemperatureChart();
+        $('#tempFunc').jqxChart(tSettings);
 
-    // Define and draw pressure chart
-    setupPressureChart();
-    $('#presFunc').jqxChart(pSettings);
+        // Define and draw pressure chart
+        setupPressureChart();
+        $('#presFunc').jqxChart(pSettings);
 
-    // Define and draw humidity chart
-    setupHumidityChart();
-    $('#humiFunc').jqxChart(hSettings);
+        // Define and draw humidity chart
+        setupHumidityChart();
+        $('#humiFunc').jqxChart(hSettings);
 /*
-*/    
+*/ 
+    });
 });

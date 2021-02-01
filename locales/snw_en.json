@@ -1,18 +1,31 @@
 {
     "alerts"            : "Alerts",
+    "autorefresh"       : "Automatic Refresh",
     "begin"             : "Begin",
     "clouds"            : "Clouds",
+    "color_"            : "Color:",
+    "comparison_"       : "Comparison:",
     "date"              : "Date",
     "day"               : "Day",
     "descript"          : "Description",
+    "display_"          : "Display:",
     "end"               : "End",
     "event"             : "Event",
+    "forecasts"         : "Forecast",
+    "free"              : "Free",
+    "from_"             : "From:",
+    "history"           : "History",
     "humidity"          : "Humidity",
     "humidity_s"        : "Humidity",
+    "id_"               : "ID:",
+    "icon"              : "Icon",
     "isday"             : "D",
     "measurementAt"     : "at",
     "measurementFrom"   : "Measurement from",
     "measurementHour"   : "",
+    "measurementValues" : "Measurement",
+    "month"             : "Month",
+    "month_"            : "Month:",
     "months": {
         "january"       : "January",
         "january_a"     : "Jan",
@@ -39,8 +52,6 @@
         "december"      : "December",
         "december_a"    : "Dec"
     },
-    "history"           : "History",
-    "icon"              : "Icon",
     "numSeparators": {
         "decimal"       : ".",
         "thousands"     : ","
@@ -49,6 +60,7 @@
     "pressure"          : "Atm. Pressure",
     "property"          : "Property",
     "rain"              : "Rain",
+    "range"             : "Range:",
     "refresh"           : "Refresh",
     "snow"              : "Snow",
     "station"           : "Weather Station",
@@ -62,8 +74,11 @@
     "tmpMorning"        : "Temp.: Morning",
     "tmpNight"          : "Temp.: Night",
     "tmpShort"          : "Temp.",
+    "to_"               : "To:",
     "uvIndex"           : "UV Index",
     "visibility"        : "Visibility",
+    "week"              : "Week",
+    "week_"             : "Week:",
     "weekdays": {
         "sunday"        : "Sunday",
         "sunday_a"      : "Su",
@@ -89,5 +104,7 @@
     },
     "windDir"           : "Wind Direct.",
     "windSpeed"         : "Wind Speed",
-    "windSpeed_s"       : "Wind Speed"
+    "windSpeed_s"       : "Wind Speed",
+    "year"              : "Year",
+    "year_"             : "Year:"
 }
