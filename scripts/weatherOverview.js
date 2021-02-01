@@ -14,6 +14,16 @@ var includeForecast = true;
 const PeriodEnum = Object.freeze({ "week": 1, "month": 2, "year": 3, "free": 4});
 var period = PeriodEnum.month;
 
+// At beginning of a month, show also the revious month
+if (tEnd.getDate() <= 10) {
+    period = PeriodEnum.free;
+    if (tEnd.getMonth() == 0) {
+        tStart = new Date(tEnd.getFullYear() - 1, 11, 1);
+    } else {
+        tStart = new Date(tEnd.getFullYear(), tEnd.getMonth() - 1, 1);
+    };
+};
+
 //
 // Path to i18n lacale JSON files relative to root
 var localesPath     = "/locales";
@@ -188,10 +198,10 @@ function firstDayOfWeek(date) {
 Initializing
 ======================== */
 // -- Auto refresh
-var autoRefresh = true;
+var autoRefresh     = false;
 var refreshRequired = false;
-var doNotRefresh = false;
-var ignoreEvents = false;
+var doNotRefresh    = false;
+var ignoreEvents    = false;
 
 compSets[0]['week'] = tEnd.getWeekNumber();
 compSets[1]['week'] = tEnd.getWeekNumber();
@@ -201,7 +211,7 @@ var cmpSets = new Array();
 // -- parameters controlling the data adapter query
 var querydata = {
     'start': tStart.toDayTimestamp() + ' 00:00:00',
-    'end': tEnd.toDayTimestamp() + ' 23:59:59',
+    'end'  : tEnd.toDayTimestamp()   + ' 23:59:59',
     period,
     PeriodEnum,
     compset: cmpSets,
@@ -628,7 +638,7 @@ Set up Selector for display period
 function setupPeriodSelector() {
     // Setup start selector
     $("#startinput").jqxDateTimeInput({ width: '120px', height: '25px' });
-    $('#startinput').jqxDateTimeInput({ culture: 'de-DE' });
+    $('#startinput').jqxDateTimeInput({ culture: i18next.language });
     $("#startinput").jqxDateTimeInput('setDate', tStart);
     $('#startinput').on('change', function(event) {
         if (ignoreEvents == false) {
@@ -645,7 +655,7 @@ function setupPeriodSelector() {
     });
     // Setup end selector
     $("#endinput").jqxDateTimeInput({ width: '120px', height: '25px' });
-    $('#endinput').jqxDateTimeInput({ culture: 'de-DE' });
+    $('#endinput').jqxDateTimeInput({ culture: i18next.language });
     $("#endinput").jqxDateTimeInput('setDate', tEnd);
     $('#endinput').on('change', function(event) {
         if (ignoreEvents == false) {
@@ -1277,6 +1287,8 @@ $(document).ready(function() {
     }, function(err, t) {
         jqueryI18next.init(i18next, $);
         localize(true);
+        //
+        // Special handling for initial period
         //
         // Auto refresh checkbox and button
         setupAutoRefresh();

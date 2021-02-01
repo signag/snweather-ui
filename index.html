@@ -68,7 +68,7 @@
 <main>
 	<div class="snw-flex-container">
         <!-- Main data area -->
-		<div class="snw-flex-item current">
+		<div class="snw-flex-item snw-current">
             <!-- Current measurements -->
 			<div class="snw-flex-item snw-temp-block">
                 <!-- Temperature block -->
@@ -107,24 +107,24 @@
 				</div>
 			</div>
 		</div>
-		<div class="snw-flex-item hour-forecast">
+		<div class="snw-flex-item snw-hour-forecast">
             <!-- Hourly forecast and alerts -->
 			<div class="snw-flex-container-column">
-				<div class="snw-flex-item">
+				<div class="snw-flex-item snw-column-element">
                     <div class="snw-fchour-grid" id="forecastHourlyTab"></div>
 				</div>
-				<div class="snw-flex-item">
+				<div class="snw-flex-item snw-column-element">
                     <div class="snw-fcalerts-grid" id="forecastAlertsTab"></div>
 				</div>
 			</div>
 		</div>
-		<div class="snw-flex-item day-forecast">
+		<div class="snw-flex-item snw-day-forecast">
             <!-- Daily forecast -->
 			<div class="snw-flex-container-column">
-				<div class="snw-flex-item">
+				<div class="snw-flex-item snw-column-element">
                     <div class="snw-fcday-grid" id="forecastDailyTab"></div>
 				</div>
-				<div class="snw-flex-item">
+				<div class="snw-flex-item snw-column-element">
                     <div class="snw-weatherwidget">
                         <iframe 
                             marginheight= "0" 
@@ -132,7 +132,7 @@
                             scrolling   = "no"
                             width       = "300"
                             height      = "200"
-                            src         = "https://api.wetteronline.de/wetterwidget?gid=10630&modeid=CW2&seourl=coelbe&locationname=Cölbe&lang=de">
+                            src         = "https://api.wetteronline.de/wetterwidget?gid=10630&modeid=CW2&seourl=coelbe&locationname= &lang=de">
                         </iframe>
                     </div>
 				</div>

@@ -17,20 +17,22 @@ Widgets on this page make use of the jQWidgets framework <https://www.jqwidgets.
 - table with 3-day openweathermap hourly forecast and alerts (all data from One Call API)
 - table with 8-day forecast data
 
-![snweather-ui](img/snweather-ui.png)
+![snweather-ui](img/snweather-ui_en.png)
 
 ### Archive data
 
 - Historical graphics for temperature, pressure and humidity
-- selectable reference period
-- selectable periods for comparison
+- Selectable reference period
+- Selectable periods for comparison
 
-![snweather-overview](img/snweatheroverview-ui.png)
+![snweather-overview](img/snweatheroverview-ui_en.png)
 
-## Installation
+## Setup
 
-Download / clone the package to your web server deploy directory (e.g. Apache htdocs).
+- **Precondition**: access to an archive database from [snweatherstation](https://github.com/signag/snweatherstation).
+- Download / clone this package to your web server deploy directory (e.g. Apache htdocs).
+- Adjust ./scripts/connect.php with the valid database connection for the [snweatherstation](https://github.com/signag/snweatherstation) database.
+- For languages other than de and en, copy and translate localization files under ./locales. (the package uses [i18next](https://www.i18next.com/) for internationalization)
+- Adjust the widget in the iframe at the bottom of index.html to your favorite widget.
 
-Adjust scripts/connect.php with the valid database connection for the [snweatherstation](https://github.com/signag/snweatherstation) database.
-
-The main page URL is **/snweather-ui/index.php**.
+The main page URL is **/snweather-ui/index.html**.

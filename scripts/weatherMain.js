@@ -1090,7 +1090,6 @@ Define grid localization
 ======================== */
 function defineGridLocalization() {
     // Grid localization
-    // TODO: internationalization
     localizationobj = {};
     localizationobj.decimalseparator   = i18next.t("numSeparators.decimal");
     localizationobj.thousandsseparator = i18next.t("numSeparators.thousands");
