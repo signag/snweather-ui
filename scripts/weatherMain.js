@@ -1284,7 +1284,7 @@ function setupHourlyForecastGrid() {
                 cellsrenderer: distrenderer,
             },
             { 
-                text:          i18next.t('windSpeed_s'), 
+                text:          i18next.t('windSpeed_s'),
                 datafield:     'windspeed',
                 cellsformat:   'f1', 
                 align:         'right', 
@@ -1294,6 +1294,7 @@ function setupHourlyForecastGrid() {
             },
             { 
                 text:          i18next.t('windDir'),
+                datafield:     'winddir',
                 align:         'right', 
                 cellsalign:    'right', 
                 width:         95,
