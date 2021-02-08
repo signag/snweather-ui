@@ -5,6 +5,10 @@ Chart default parameters
 // -- Initial start and end date
 var tEnd = new Date();
 var tStart = new Date(tEnd.getFullYear(), tEnd.getMonth(), 1);
+//
+// Temperature range for widgets
+var tempMin = -30;
+var tempMax =  40;
 
 // -- Content selection
 var includeMeasurement = true;
@@ -36,6 +40,8 @@ var fallbackLangs   = ["de"];
 // When launched from index.html, the current language for this page is transferred 
 // through query string.
 var lngDetectOrder  = ['querystring', 'navigator', 'htmlTag', 'subdomain'];
+// i18next debug mode
+var i18nextDebug = false;
 
 // -- Comparison sets
 //    These are used for the comparison selector on the page
@@ -320,7 +326,10 @@ function setupTemperatureChart() {
             formatFunction: function(value) {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
-            showTickMarks: true
+            showTickMarks: true,
+            toolTipFormatFunction: function(value) {
+                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
+            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -330,8 +339,8 @@ function setupTemperatureChart() {
             labels: { visible: true, step: 5 },
             tickMarks: { visible: true, step: 1, color: '#000000' },
             gridLines: { visible: true, step: 5, color: '#000000' },
-            minValue: -10,
-            maxValue: 40
+            minValue: tempMin,
+            maxValue: tempMax,
         },
         seriesGroups: tSeriesGroups,
     };
@@ -360,7 +369,10 @@ function setupPressureChart() {
             formatFunction: function(value) {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
-            showTickMarks: true
+            showTickMarks: true,
+            toolTipFormatFunction: function(value) {
+                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
+            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -398,7 +410,10 @@ function setupHumidityChart() {
             formatFunction: function(value) {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
-            showTickMarks: true
+            showTickMarks: true,
+            toolTipFormatFunction: function(value) {
+                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
+            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -457,7 +472,7 @@ function DataFieldsMeasurement(set, col) {
             dataField: 'temperature_' + set,
             lineColor: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Gemessene Temperatur'
+            displayText: set + ': ' + i18next.t("measuredTemp"),
         }]
     });
 
@@ -468,7 +483,7 @@ function DataFieldsMeasurement(set, col) {
             dataField: 'pressure_' + set,
             lineColor: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Gemessener Luftdruck'
+            displayText: set + ': ' + i18next.t("measuredPres"),
         }]
     });
 
@@ -479,7 +494,7 @@ function DataFieldsMeasurement(set, col) {
             dataField: 'humidity_' + set,
             lineColor: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Gemessene Luftfeuchtigkeit'
+            displayText: set + ': ' + i18next.t("measuredHumi"),
         }]
     });
 }
@@ -507,7 +522,7 @@ function DataFieldsForecast(set, col) {
             lineColor: col,
             lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Vorhersage Temperatur'
+            displayText: set + ': ' + i18next.t('forecastTemp'),
         }]
     });
 
@@ -521,7 +536,7 @@ function DataFieldsForecast(set, col) {
             lineColor: col,
             lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Vorhersage Luftdruck'
+            displayText: set + ': ' + i18next.t('forecastPres'),
         }]
     });
 
@@ -535,7 +550,7 @@ function DataFieldsForecast(set, col) {
             lineColor: col,
             lineColorSymbol: col,
             emptyPointsDisplay: 'skip',
-            displayText: set + ': Vorhersage Luftfeuchtigkeit'
+            displayText: set + ': ' + i18next.t('forecastHumi'),
         }]
     });
 }
@@ -1280,7 +1295,7 @@ $(document).ready(function() {
         },
         supportedLngs: supportedLangs,
         fallbackLng  : fallbackLangs,
-        debug: false,
+        debug: i18nextDebug,
         backend: {
             loadPath : root + localesPath + '/snw_{{lng}}.json'
         },

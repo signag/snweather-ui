@@ -5,9 +5,15 @@
 // Path to i18n lacale JSON files relative to root
 var localesPath     = "/locales";
 // Supported languages
-var supportedLangs = ["de", "en"];
+var supportedLangs  = ["de", "en"];
 // Fallback language
 var fallbackLangs   = ["de"];
+// i18next debug mode
+var i18nextDebug = false;
+//
+// Temperature range for widgets
+var tempMin = -30;
+var tempMax =  40;
 //
 // ================
 // Global variables
@@ -69,6 +75,15 @@ function localize(initial) {
     defineGridLocalization();
 
     if (initial == false) {
+        // Localize temperature diagram
+        setupTemperatureDiagram();
+        
+        // Localize Pressure diagram
+        setupPressureDiagram();
+
+        // Localize humidity diagram
+        setupHumidityDiagram();
+
         // Localize hourly forecast grid
         $("#forecastHourlyTab").jqxGrid('localizestrings', localizationobj);
         setupHourlyForecastGrid();
@@ -144,7 +159,7 @@ function setupThermometer() {
     $('#thermometer').jqxLinearGauge({
         orientation: 'vertical',
         width:  200,
-        height: 316,
+        height: 430,
         ticksMajor: { 
             size:     '15%', 
             interval: 5,
@@ -156,8 +171,8 @@ function setupThermometer() {
                 stroke: '#aaaaaa'
             },
         },
-        max:  40,
-        min: -30,
+        max: tempMax,
+        min: tempMin,
         pointer: { 
             size:  '5%',
             style: {
@@ -467,8 +482,8 @@ function setupTemperatureDiagram() {
                 step:    5, 
                 color:  '#000000',
             },
-            minValue: -10,
-            maxValue:  40,
+            minValue: tempMin,
+            maxValue: tempMax,
         },
         seriesGroups: [
             {
@@ -477,7 +492,7 @@ function setupTemperatureDiagram() {
                     { dataField:          'temperature',
                       lineColor:          '#000000',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Gemessene Temperatur',
+                      displayText:        i18next.t('measuredTemp'),
                     }
                 ]
             },
@@ -489,7 +504,7 @@ function setupTemperatureDiagram() {
                       symbolSize:         1,
                       lineColor:          '#a6a6a6',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Vorhersage Temperatur',                         
+                      displayText:        i18next.t('forecastTemp'),                         
                     },
                 ],
             },
@@ -547,7 +562,7 @@ function setupPressureDiagram() {
                     { dataField:          'pressure',
                       lineColor:          '#000000',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Gemessener Luftdruck'
+                      displayText:        i18next.t('measuredPres')
                     }
                 ]
             },
@@ -559,7 +574,7 @@ function setupPressureDiagram() {
                       symbolSize:         1,
                       lineColor:          '#a6a6a6',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Vorhersage Luftdruck'                            
+                      displayText:        i18next.t('forecastPres')                            
                     },
                 ],
             },
@@ -615,7 +630,7 @@ function setupHumidityDiagram() {
                     { dataField:          'humidity',
                       lineColor:          '#000000',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Gemessene Luftfeuchtigkeit',
+                      displayText:        i18next.t('measuredHumi'),
                     },
                 ],
             },
@@ -627,7 +642,7 @@ function setupHumidityDiagram() {
                       symbolSize:         1,
                       lineColor:          '#a6a6a6',
                       emptyPointsDisplay: 'skip',
-                      displayText:        'Vorhersage Luftfeuchtigkeit'                            
+                      displayText:        i18next.t('forecastHumi')                            
                     }
                 ]
             }
@@ -1574,7 +1589,7 @@ $(document).ready(function() {
         },
         supportedLngs: supportedLangs,
         fallbackLng: fallbackLangs,
-        debug: false,
+        debug: i18nextDebug,
         backend: {
             loadPath: root + localesPath + '/snw_{{lng}}.json'
         },

@@ -66,6 +66,14 @@
     margin-right: 0px;
 }
 
+.snw-cur-graph-temp {
+    width: 450px;
+    height: 450px;
+    border: 0px dashed;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .snw-cur-graph {
     width: 450px;
     height: 350px;
@@ -225,6 +233,14 @@
     margin-bottom: 5px;
     margin-right: 10px;
     padding: 5px;
+}
+
+.snw-ovw-graph-temp {
+    width: 1900px;
+    height: 450px;
+    border: 1px dashed;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .snw-ovw-graph {
