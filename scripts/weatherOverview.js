@@ -445,6 +445,7 @@ function initializeDataFields() {
     datafields.push({ name: 'day_month' })
     datafields.push({ name: 'week' })
     datafields.push({ name: 'day_week' })
+    datafields.push({ name: 'hour' })
 
     // series groups
     tSeriesGroups = new Array();

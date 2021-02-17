@@ -12,10 +12,11 @@ function mergeDatasets(&$ref, $cmp, $dsName, $keyType){
 
     $i = 0;
     $j = 0;
-    while ($i<$rLen) {
+    while ($i < $rLen) {
         // process reference element
         $rEl = $ref[$i];
         $rKey = $rEl['day_' . $keyType];
+        $rH = $rEl['hour'];
 
         $found = false;
         $stop = false;
@@ -27,16 +28,31 @@ function mergeDatasets(&$ref, $cmp, $dsName, $keyType){
             do {
                 $cEl = $cmp[$j];
                 $cKey = $cEl['day_' . $keyType];
-                if ($rKey == $cKey) {
-                    $found = true;
-                    $stop = true;
-                    $j++;
-                } elseif ($rKey < $cKey) {
+                $cH = $cEl['hour'];
+                if ($cKey == $rKey) {
+                    // comparison key = reference key. Now compare hour
+                    if ($cH == $rH) {
+                        $found = true;
+                        $stop = true;
+                        $j++;
+                    } elseif ($cH < $rH) {
+                        // comparison hour < reference hour. Step foreward in comparison set.
+                        $j++;
+                        if ($j >= $cLen) {
+                            $stop = true;
+                        };
+                    } elseif ($cH > $rH) {
+                        // comparison hour > reference hour. Step foreward in reference set.
+                        $stop = true;
+                    };
+                } elseif ($cKey < $rKey) {
+                    // comparison key < reference key. Step foreward in comparison set.
                     $j++;
                     if ($j >= $cLen) {
                         $stop = true;
                     };
-                } elseif ($rKey > $cKey) {
+                } elseif ($cKey > $rKey) {
+                    // comparison key > reference key. Step foreward in reference set.
                     $stop = true;
                 };
             } while ($stop == false);
@@ -81,6 +97,7 @@ function getWeatherDataRef($start, $end)
                      DAYOFMONTH(w.timestamp)  day_month,
                      WEEK(w.timestamp, 3)     week,
                      WEEKDAY(w.timestamp)     day_week,
+                     HOUR(w.timestamp)        hour,
                      w.temperature            temperature_REF,
                      w.humidity               humidity_REF,
                      w.pressure               pressure_REF,
@@ -107,6 +124,7 @@ function getWeatherDataRef($start, $end)
         $day_month,
         $week,
         $day_week,
+        $hour,
         $temperature_REF,
         $humidity_REF,
         $pressure_REF,
@@ -126,6 +144,7 @@ function getWeatherDataRef($start, $end)
             'day_month'             => $day_month,
             'week'                  => $week,
             'day_week'              => $day_week,
+            'hour'                  => $hour,
             'temperature_REF'       => $temperature_REF,
             'humidity_REF'          => $humidity_REF,
             'pressure_REF'          => $pressure_REF,
@@ -158,6 +177,7 @@ function getWeatherData($start, $end)
                      DAYOFMONTH(w.timestamp)  day_month,
                      WEEK(w.timestamp, 3)     week,
                      WEEKDAY(w.timestamp)     day_week,
+                     HOUR(w.timestamp)        hour,
                      w.temperature            temperature,
                      w.humidity               humidity,
                      w.pressure               pressure,
@@ -184,6 +204,7 @@ function getWeatherData($start, $end)
         $day_month,
         $week,
         $day_week,
+        $hour,
         $temperature,
         $humidity,
         $pressure,
@@ -203,6 +224,7 @@ function getWeatherData($start, $end)
             'day_month'         => $day_month,
             'week'              => $week,
             'day_week'          => $day_week,
+            'hour'              => $hour,
             'temperature'       => $temperature,
             'humidity'          => $humidity,
             'pressure'          => $pressure,
