@@ -298,6 +298,9 @@ if ($compSets > 0) {
             case $PeriodEnum['year']:
                 $key = 'year';
                 break;
+            case $PeriodEnum['free']:
+                $key = 'year';
+                break;
             default:
                 $key = 'none';
         };

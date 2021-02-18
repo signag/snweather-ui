@@ -18,7 +18,7 @@ var includeForecast = true;
 const PeriodEnum = Object.freeze({ "week": 1, "month": 2, "year": 3, "free": 4});
 var period = PeriodEnum.month;
 
-// At beginning of a month, show also the revious month
+// At beginning of a month, show also the previous month
 if (tEnd.getDate() <= 10) {
     period = PeriodEnum.free;
     if (tEnd.getMonth() == 0) {
@@ -102,9 +102,6 @@ Date.prototype.toDayTimestamp = function() {
         ds = '0' + ds
     };
     ts = y + '-' + ms + '-' + ds
-        //ts = y 
-        //    + '-' + m.toString().padStart(2, '0') 
-        //    + '-' + d.toString().padStart(2, '0');
     return ts;
 };
 
@@ -209,9 +206,9 @@ var refreshRequired = false;
 var doNotRefresh    = false;
 var ignoreEvents    = false;
 
-compSets[0]['week'] = tEnd.getWeekNumber();
-compSets[1]['week'] = tEnd.getWeekNumber();
-compSets[2]['week'] = tEnd.getWeekNumber();
+for (var s = 0; s < compSets.length; s++) {
+    compSets[s]['week'] = tEnd.getWeekNumber();
+};
 
 var cmpSets = new Array();
 // -- parameters controlling the data adapter query
@@ -233,6 +230,127 @@ var pSettings;
 var pSeriesGroups;
 var hSettings;
 var hSeriesGroups;
+
+// -- Declare tooltip format function for all charts
+//    The intention is to show the specific time of measurement or forecast
+//    for a series, rather than the time of the reference set
+var toolTipCustomFormatFn = function (
+    value, 
+    itemIndex,
+    series,
+    group,
+    categoryValue,
+    categoryAxis) {
+        var tRef = categoryValue;
+        var df = series["dataField"];
+        // Data field naming is e.g. fc_temperature_REF
+        // Get set ID (e.g. "REF")
+        var p = df.lastIndexOf("_");
+        var setId = df.substring(p + 1, df.length);
+        var set = i18next.t("comparisonSet") + ": " + setId;
+        df = df.substr(0, p);
+
+        // Get forecast or measurement
+        var isForecast = false;
+        if (df.substr(0, 3) == "fc_") {
+            isForecast = true;
+            df = df.substring(3, df.length);
+        }
+        
+        // Determine set-specific time
+        var tSet = setSpecificDate(tRef, setId);
+        var tSer = tSet.toLocaleString(i18next.language);
+        var tDis = i18next.t("time") + ": " + tSer;
+
+        // Set data type
+        if (isForecast == true) {
+            var dTyp = i18next.t("forecast");
+        } else {
+            var dTyp = i18next.t("measurement");
+        };
+
+        // Set unit
+        var unit = "??"
+        if (df == "temperature") {
+            unit = "°C";
+        } else if (df == "pressure") {
+            unit = "hPa";
+        } else if (df == "humidity") {
+            unit = "%" 
+        };
+
+        // Prepare display
+        dTyp = dTyp + " " + i18next.t(df);
+        var dat = dTyp + ": " + value + " " + unit
+        return '<div style="text-align:left">'
+             + set
+             + '<br />' 
+             + tDis
+             + '<br />' 
+             + dat;
+    };
+
+/*
+=====================================================
+Determine set-specific date from given reference date
+===================================================== */
+function setSpecificDate(refDate, setId) {
+    var sd = refDate;
+
+    if (setId != compSets[0]["setName"]) {
+        var y  = sd.getFullYear
+        var m  = sd.getMonth();
+        var d  = sd.getDate();
+        var wd = sd.getDay() || 7;
+        var h  = sd.getHours();
+        var mi = sd.getMinutes();
+        var s  = sd.getSeconds();
+        var ms = sd.getMilliseconds();
+
+        var compSet = getComparisonSet(setId);
+        if (compSet != null) {
+            switch(period) {
+                case PeriodEnum.year:
+                    // Set date is corresponding date in set year
+                    sd = new Date(compSet['year'], m, d, h, mi, s, ms);
+                    break;
+                case PeriodEnum.month:
+                    // Set date is corresponding date in set month
+                    sd = new Date(compSet['year'], compSet['month'] - 1, d, h, mi, s, ms);
+                    break;
+                case PeriodEnum.week:
+                    // Set date is corresponding week day in set week
+                    var ws = getStartOfWeek(compSet['year'], compSet['week']);
+                    sd  = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate(), h, mi, s, ms);
+                    sd.setDate(sd.getDate() + wd - 1);
+                    break;
+                case PeriodEnum.free:
+                    // Set date is corresponding date in set year
+                    sd = new Date(compSet['year'], m, d, h, mi, s, ms);
+                    break;
+            };
+        
+        };
+    };
+    return sd;
+}
+
+/*
+===============================
+Get comparison set given its ID
+=============================== */
+function getComparisonSet(setId) {
+    var set = null;
+
+    for (var s = 0; s < compSets.length; s++) {
+        if (compSets[s]['setName'] == setId) {
+            set = compSets[s];
+            break;
+        };
+    };
+    
+    return set;
+}
 
 /*
 =======================
@@ -316,6 +434,7 @@ function setupTemperatureChart() {
         showBorderLine: false,
         source: dataAdapter,
         colorScheme: 'scheme05',
+        toolTipFormatFunction: toolTipCustomFormatFn,
         xAxis: {
             textRotationAngle: 90,
             valuesOnTicks: true,
@@ -327,9 +446,6 @@ function setupTemperatureChart() {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
             showTickMarks: true,
-            toolTipFormatFunction: function(value) {
-                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
-            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -359,6 +475,7 @@ function setupPressureChart() {
         showBorderLine: false,
         source: dataAdapter,
         colorScheme: 'scheme05',
+        toolTipFormatFunction: toolTipCustomFormatFn,
         xAxis: {
             textRotationAngle: 90,
             valuesOnTicks: true,
@@ -370,9 +487,6 @@ function setupPressureChart() {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
             showTickMarks: true,
-            toolTipFormatFunction: function(value) {
-                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
-            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -400,6 +514,7 @@ function setupHumidityChart() {
         showBorderLine: false,
         source: dataAdapter,
         colorScheme: 'scheme05',
+        toolTipFormatFunction: toolTipCustomFormatFn,
         xAxis: {
             textRotationAngle: 90,
             valuesOnTicks: true,
@@ -411,9 +526,6 @@ function setupHumidityChart() {
                 return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy');
             },
             showTickMarks: true,
-            toolTipFormatFunction: function(value) {
-                return $.jqx.dataFormat.formatdate(value, 'dd.MM.yy HH:mm');
-            },
         },
         valueAxis: {
             displayValueAxis: true,
@@ -851,8 +963,9 @@ function refreshComparisonSelectorMonth(ind) {
 
     // Disable depending on period selection
     if ((period == PeriodEnum.year)
-    ||  (period == PeriodEnum.week)) {
-        $(cbId).jqxNumberInput({ disabled: true });
+    ||  (period == PeriodEnum.week) 
+    ||  (period == PeriodEnum.free)) {
+            $(cbId).jqxNumberInput({ disabled: true });
     } else {
         $(cbId).jqxNumberInput({ disabled: false });
     };
